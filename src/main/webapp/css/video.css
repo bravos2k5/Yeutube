@@ -1,0 +1,735 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+/* Header Styles */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 56px;
+    padding: 0 16px;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #e5e5e5;
+    z-index: 100;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.menu-icon {
+    cursor: pointer;
+}
+
+.search-bar {
+    flex: 1;
+    height: 40px;
+    padding: 0 16px;
+    border: 1px solid #ccc;
+    border-radius: 20px 0 0 20px;
+    font-size: 16px;
+    outline: none;
+    background: #f8f8f8;
+    transition: all 0.2s ease;
+}
+
+.search-button {
+    height: 40px;
+    padding: 0 20px;
+    background: #f8f8f8;
+    border: 1px solid #ccc;
+    border-left: none;
+    border-radius: 0 20px 20px 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.search-button:hover {
+    background: #e8e8e8;
+}
+
+.search-bar:focus {
+    border-color: #1c62b9;
+    background: white;
+}
+
+.search-bar:focus + .search-button {
+    border-color: #1c62b9;
+    background: #f0f0f0;
+}
+
+/* Dark mode styles cho search box */
+body.dark-mode .search-bar {
+    background: #121212;
+    border-color: #303030;
+    color: white;
+}
+
+body.dark-mode .search-button {
+    background: #121212;
+    border-color: #303030;
+    color: white;
+}
+
+body.dark-mode .search-bar:focus {
+    background: #202020;
+    border-color: #3ea6ff;
+}
+
+body.dark-mode .search-button:hover {
+    background: #202020;
+}
+
+body.dark-mode .search-bar:focus + .search-button {
+    border-color: #3ea6ff;
+    background: #202020;
+}
+
+/* Responsive styles cho search box */
+@media (max-width: 768px) {
+    .search-container {
+        max-width: 300px;
+    }
+
+    .search-bar {
+        font-size: 14px;
+    }
+
+    .search-button {
+        padding: 0 15px;
+    }
+}
+
+/* Main Content */
+.main-content {
+    margin-top: 56px;
+    padding: 24px;
+    display: flex;
+    gap: 24px;
+    max-width: 1800px;
+    margin-left: 240px;
+    /* Chiều rộng sidebar */
+    margin-right: auto;
+}
+
+/* Primary Content */
+.primary {
+    flex: 1;
+    min-width: 0;
+}
+
+.video-container {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: #000;
+    margin-bottom: 16px;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.video-container iframe {
+    width: 100% !important;
+    height: 100% !important;
+    border: 0 !important;
+}
+
+.video-info {
+    padding: 16px 0;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.video-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.video-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.channel-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.channel-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #e5e5e5;
+}
+
+.subscribe-button {
+    background: #c00;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+/* Secondary Content */
+.secondary {
+    width: 400px;
+    flex-shrink: 0;
+}
+
+.suggestion-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.suggestion-card {
+    display: flex;
+    gap: 8px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 4px;
+    position: relative;
+}
+
+.suggestion-card:hover {
+    background-color: #f2f2f2;
+}
+
+.suggestion-number {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.suggestion-thumbnail {
+    width: 168px;
+    aspect-ratio: 16/9;
+    background-color: #e5e5e5;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.suggestion-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.suggestion-title {
+    font-weight: 500;
+    margin-bottom: 4px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.suggestion-channel,
+.suggestion-stats {
+    color: #606060;
+    font-size: 14px;
+}
+
+.likes-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.like-button {
+    background: #f2f2f2;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Sidebar */
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 56px;
+    width: 240px;
+    height: calc(100vh - 56px);
+    background-color: white;
+    padding: 12px 0;
+    overflow-y: auto;
+    transform: translateX(0);
+    transition: transform 0.3s ease;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    max-width: 600px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.search-bar {
+    flex: 1;
+    height: 40px;
+    padding: 0 16px;
+    border: 1px solid #ccc;
+    border-radius: 20px 0 0 20px;
+    font-size: 16px;
+    outline: none;
+    background: #f8f8f8;
+    transition: all 0.2s ease;
+}
+
+.search-button {
+    height: 40px;
+    padding: 0 20px;
+    background: #f8f8f8;
+    border: 1px solid #ccc;
+    border-left: none;
+    border-radius: 0 20px 20px 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.search-button:hover {
+    background: #e8e8e8;
+}
+
+.search-bar:focus {
+    border-color: #1c62b9;
+    background: white;
+}
+
+.search-bar:focus + .search-button {
+    border-color: #1c62b9;
+    background: #f0f0f0;
+}
+
+/* Dark mode styles cho search box */
+body.dark-mode .search-bar {
+    background: #121212;
+    border-color: #303030;
+    color: white;
+}
+
+body.dark-mode .search-button {
+    background: #121212;
+    border-color: #303030;
+    color: white;
+}
+
+body.dark-mode .search-bar:focus {
+    background: #202020;
+    border-color: #3ea6ff;
+}
+
+body.dark-mode .search-button:hover {
+    background: #202020;
+}
+
+body.dark-mode .search-bar:focus + .search-button {
+    border-color: #3ea6ff;
+    background: #202020;
+}
+
+/* Responsive styles cho search box */
+@media (max-width: 768px) {
+    .search-container {
+        max-width: 300px;
+    }
+
+    .search-bar {
+        font-size: 14px;
+    }
+
+    .search-button {
+        padding: 0 15px;
+    }
+}
+
+.sidebar.hidden {
+    transform: translateX(-100%);
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 24px;
+    cursor: pointer;
+    gap: 24px;
+}
+
+.nav-item:hover {
+    background-color: #f2f2f2;
+}
+
+.dark-mode-toggle {
+    background-color: #555;
+    /* Màu nền nút */
+    color: white;
+    /* Màu chữ nút */
+    border: none;
+    /* Không có đường viền */
+    border-radius: 20px;
+    /* Bo tròn các góc */
+    padding: 8px 12px;
+    /* Khoảng cách bên trong */
+    cursor: pointer;
+    /* Con trỏ khi di chuột qua */
+    transition: background-color 0.3s ease;
+    /* Hiệu ứng chuyển đổi màu nền */
+}
+
+.dark-mode-toggle:hover {
+    background-color: #777;
+    /* Màu nền khi hover */
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+    .main-content {
+        margin-left: 0;
+    }
+
+    .secondary {
+        display: none;
+    }
+}
+
+body.dark-mode {
+    background-color: #181818;
+    color: #ffffff;
+}
+
+body.dark-mode .description {
+    background-color: #202020;
+}
+
+.description {
+    background-color: #f2f2f2;
+}
+
+body.dark-mode .header {
+    background-color: #202020;
+    border-bottom: 1px solid #333;
+}
+
+body.dark-mode .search-bar {
+    background-color: #333;
+    color: #fff;
+    border: 1px solid #444;
+}
+
+body.dark-mode .sidebar {
+    background-color: #202020;
+}
+
+body.dark-mode .nav-item:hover {
+    background-color: #333;
+}
+
+body.dark-mode .main-content {
+    background-color: #181818;
+}
+
+body.dark-mode .primary,
+body.dark-mode .secondary {
+    background-color: #181818;
+}
+
+body.dark-mode .video-info {
+    border-bottom: 1px solid #333;
+}
+
+body.dark-mode .video-title {
+    color: #ffffff;
+}
+
+body.dark-mode .channel-info div {
+    color: #aaaaaa;
+}
+
+body.dark-mode .subscribe-button {
+    background-color: #cc0000;
+}
+
+body.dark-mode .suggestion-card:hover {
+    background-color: #333;
+}
+
+body.dark-mode .suggestion-title,
+body.dark-mode .suggestion-channel,
+body.dark-mode .suggestion-stats {
+    color: #cccccc;
+}
+
+body.dark-mode .like-button {
+    background-color: #333;
+    color: #ffffff;
+}
+
+
+/* Popup Overlay */
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Popup Content */
+.popup-content {
+    background-color: white;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Popup Header */
+.popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.popup-header h2 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+}
+
+/* Form Styles */
+.share-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-weight: 500;
+    color: #606060;
+}
+
+/* Email Chips Container */
+.email-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    min-height: 42px;
+}
+
+#emailInput {
+    border: none;
+    outline: none;
+    flex: 1;
+    min-width: 120px;
+    padding: 4px;
+}
+
+/* Email Chip Style */
+.email-chip {
+    background-color: #f0f0f0;
+    padding: 4px 8px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.remove-email {
+    cursor: pointer;
+    color: #666;
+}
+
+/* Textarea Style */
+#message {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: vertical;
+}
+
+/* Button Styles */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.btn {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.btn-primary {
+    background-color: #c00;
+    color: white;
+}
+
+.btn-secondary {
+    background-color: #f2f2f2;
+    color: #606060;
+}
+
+/* Dark Mode Styles */
+body.dark-mode .popup-content {
+    background-color: #202020;
+    color: white;
+}
+
+body.dark-mode .email-chips {
+    background-color: #333;
+    border-color: #444;
+}
+
+body.dark-mode #emailInput {
+    background-color: #333;
+    color: white;
+}
+
+body.dark-mode .email-chip {
+    background-color: #444;
+    color: white;
+}
+
+body.dark-mode #message {
+    background-color: #333;
+    border-color: #444;
+    color: white;
+}
+
+body.dark-mode .btn-secondary {
+    background-color: #333;
+    color: white;
+}
+
+/* Responsive Styles */
+@media (max-width: 480px) {
+    .popup-content {
+        width: 95%;
+        padding: 16px;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+    }
+}
+
+/* Action Buttons Styles */
+.likes-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 20px;
+    background-color: #f2f2f2;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.action-btn:hover {
+    background-color: #e5e5e5;
+}
+
+.action-btn i {
+    font-size: 20px;
+}
+
+/* Like button specific styles */
+.like-btn {
+    position: relative;
+}
+
+/*.like-btn.liked {*/
+/*    color: #065fd4;*/
+/*    background-color: #def1ff;*/
+/*}*/
+
+.like-btn.liked:hover {
+    background-color: #c6e4ff;
+}
+
+.like-btn.liked .like-icon {
+    content: "thumb_up";
+}
+
+/* Dark mode styles */
+body.dark-mode .action-btn {
+    background-color: #272727;
+    color: #fff;
+}
+
+body.dark-mode .action-btn:hover {
+    background-color: #383838;
+}
+
+/*body.dark-mode .like-btn.liked {*/
+/*    background-color: #263850;*/
+/*    color: #3ea6ff;*/
+/*}*/
+
+body.dark-mode .like-btn.liked:hover {
+    background-color: #2f4460;
+}
