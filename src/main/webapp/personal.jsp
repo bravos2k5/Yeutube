@@ -19,7 +19,7 @@
                 <button id="saveChanges" type="button" class="btn">Lưu thay đổi</button>
             </form>
         </div>
-        
+
         <div class="profile-section">
             <h2 class="section-title">Đổi mật khẩu</h2>
             <form>
@@ -35,7 +35,7 @@
                     <label for="confirm-password">Nhập lại mật khẩu</label>
                     <input type="password" id="confirm-password" class="form-control">
                 </div>
-                <button type="submit" class="btn">Đổi mật khẩu</button>
+                <button id="changePassword" type="button" class="btn">Đổi mật khẩu</button>
             </form>
         </div>
 
@@ -60,13 +60,47 @@
             },
             body: JSON.stringify(request)
         }).then(response => {
-            if(!response.ok) {
+            if (!response.ok) {
                 showAlert('error', 'Lỗi server', 'Không thể kết nối đến máy chủ, hãy thử lại sau! :((');
                 return Promise.reject(new Error('Lỗi xử lý máy chủ'));
             }
             return response.json();
         }).then(data => {
-            showAlert(data.status === 0 ? 'success' : 'error','Thông báo',data.message);
+            showAlert(data.status === 0 ? 'success' : 'error', 'Thông báo', data.message);
+        })
+
+    }
+
+    function changePassword() {
+
+        const request = {
+            oldPassword: document.getElementById('current-password').value,
+            newPassword: document.getElementById('new-password').value
+        }
+
+        let confirmPassword = document.getElementById('confirm-password').value;
+        if (request.newPassword !== confirmPassword) {
+            showAlert('warning', 'Cảnh báo', 'Mật khẩu không trùng khớp');
+            return;
+        }
+
+        fetch('/api/private/changepassword', {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(request)
+        }).then(response => {
+            if (!response.ok) {
+                showAlert('error', 'Lỗi server', 'Không thể kết nối đến máy chủ, hãy thử lại sau! :((');
+                return Promise.reject(new Error('Lỗi xử lý máy chủ'));
+            }
+            return response.json();
+        }).then(data => {
+            document.getElementById('current-password').value = '';
+            document.getElementById('new-password').value = '';
+            document.getElementById('confirm-password').value = '';
+            showAlert(data.status === 0 ? 'success' : 'error', 'Thông báo', data.message);
         })
 
     }
@@ -78,8 +112,8 @@
         });
     }
 
-    addEventButton('saveChanges',changeInfo);
-
+    addEventButton('saveChanges', changeInfo);
+    addEventButton('changePassword', changePassword);
 
 
 </script>

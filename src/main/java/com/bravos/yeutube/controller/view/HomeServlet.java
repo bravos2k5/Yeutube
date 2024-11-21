@@ -42,7 +42,7 @@ public class HomeServlet extends HttpServlet {
                 page = Integer.parseInt(req.getParameter("page"));
             } catch (NumberFormatException e) {
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND);
-                return;
+                throw new RuntimeException("Page format");
             }
         }
 

@@ -11,11 +11,13 @@ public class LogoutServlet extends HttpServlet {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         HttpSession session = req.getSession();
-        session.removeAttribute("user");
-        Cookie cookie = new Cookie("accessToken","");
-        cookie.setMaxAge(0);
-        cookie.setPath("/");
-        resp.addCookie(cookie);
+        if (session.getAttribute("user") != null) {
+            session.invalidate();
+            Cookie cookie = new Cookie("accessToken","");
+            cookie.setMaxAge(0);
+            cookie.setPath("/");
+            resp.addCookie(cookie);
+        }
         resp.sendRedirect(getServletContext().getContextPath() + "/home");
     }
 

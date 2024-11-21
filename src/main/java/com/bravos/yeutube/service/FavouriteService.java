@@ -22,7 +22,7 @@ public class FavouriteService {
     }
 
     public long likeVideo(String username, UUID videoId) {
-        try (Jedis jedis = RedisConnectionPool.getInstance().getJedisPool().getResource()) {
+        try (Jedis jedis = RedisConnectionPool.getInstance().getResource()) {
             String key = "like:" + videoId;
             String value = jedis.get(key);
             if (value == null) {
@@ -36,7 +36,7 @@ public class FavouriteService {
     }
 
     public long unLikeVideo(String username, UUID videoId) {
-        try (Jedis jedis = RedisConnectionPool.getInstance().getJedisPool().getResource()) {
+        try (Jedis jedis = RedisConnectionPool.getInstance().getResource()) {
             String key = "like:" + videoId;
             String value = jedis.get(key);
             if (value == null) {

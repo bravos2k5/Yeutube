@@ -50,6 +50,11 @@ public abstract class Repository<T,ID> {
 
     }
 
+    public Long countAll() {
+        String hql = "SELECT COUNT(e) FROM " + clazz.getName() + " e";
+        return executeHqlSingleData(hql,Long.class).getFirst();
+    }
+
     public final void insert(T[] objects) {
         EntityTransaction transaction = null;
         try(EntityManager entityManager = HibernateConfig.entityManager()) {

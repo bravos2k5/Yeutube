@@ -1,4 +1,3 @@
-<%--<jsp:useBean id="video" scope="request" type="com.bravos.yeutube.model.Video"/>--%>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <div class="main-content">
     <div class="edit-header">

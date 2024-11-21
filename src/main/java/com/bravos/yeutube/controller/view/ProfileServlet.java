@@ -30,6 +30,4 @@ public class ProfileServlet extends HttpServlet {
         req.getRequestDispatcher(getServletContext().getContextPath() + "/client.jsp").forward(req,resp);
     }
 
-
-
 }

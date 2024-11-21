@@ -1,8 +1,10 @@
 package com.bravos.yeutube.config;
 
+import com.bravos.yeutube.config.filter.AppFilter;
+import com.bravos.yeutube.config.filter.AutoLoginFilter;
+import com.bravos.yeutube.config.filter.LogFilter;
 import com.bravos.yeutube.config.filter.SecurityFilter;
 import com.bravos.yeutube.service.VideoService;
-import jakarta.servlet.FilterRegistration;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
@@ -21,18 +23,23 @@ public class ContextListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
+
         ServletContext context = sce.getServletContext();
-        FilterRegistration.Dynamic filterRegistration = context.addFilter("jwtFilter", new SecurityFilter());
-        filterRegistration.addMappingForUrlPatterns(null,false,"/*");
+        context.addFilter("autoLoginFilter", new AutoLoginFilter());
+        context.addFilter("appFilter", new AppFilter());
+        context.addFilter("securityFilter", new SecurityFilter());
+        context.addFilter("logFilter", new LogFilter());
         videoService.getVideoCount();
+        context.setAttribute("visitors",0L);
+
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
 
         this.scheduleEvent.cancelAllProcess();
-        RedisConnectionPool.getInstance().getJedisPool().getResource().flushDB();
-        HibernateConfig.shutdown();
+
+        RedisConnectionPool.getInstance().getResource().flushDB();
         RedisConnectionPool.getInstance().shutdown();
 
         Enumeration<Driver> drivers = DriverManager.getDrivers();
@@ -44,6 +51,8 @@ public class ContextListener implements ServletContextListener {
                 System.err.println("Lỗi khi deregister driver: " + driver);
             }
         }
+
+        HibernateConfig.shutdown();
 
     }
 

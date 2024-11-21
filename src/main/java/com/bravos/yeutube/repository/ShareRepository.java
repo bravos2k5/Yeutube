@@ -25,8 +25,4 @@ public class ShareRepository extends Repository<Share,Long> {
         return executeHqlSingleData(hql, ShareStatistic.class);
     }
 
-    public static void main(String[] args) {
-        new ShareRepository().getShareStatistic().forEach(System.out::println);
-    }
-
 }

@@ -9,15 +9,12 @@
         </button>
     </div>
 
-    <div class="search-box">
-        <form style="display: flex; width: 100%" action="${pageContext.request.contextPath}/admin/videos">
-            <input name="search" type="text" class="search-input" placeholder="Tìm kiếm video..." style="flex: 1; box-sizing: border-box;">
-            <button class="btn btn-primary">
-                <i class="material-icons">search</i>
-                Tìm kiếm
-            </button>
-        </form>
-    </div>
+    <form class="search-box" style="display: flex; width: 100%" action="${pageContext.request.contextPath}/admin/videos">
+        <input name="search" type="text" class="search-input" placeholder="Tìm kiếm video..." style="flex: 1; box-sizing: border-box;">
+        <button class="btn btn-primary">
+            <i class="material-icons">search</i>
+        </button>
+    </form>
 
 
     <div class="video-grid">
@@ -45,6 +42,20 @@
             </div>
         </c:forEach>
 
-
     </div>
+
+    <div class="pagination">
+        <button class="page-btn">
+            <i class="material-icons">chevron_left</i>
+        </button>
+        <button class="page-btn active">1</button>
+        <button class="page-btn">2</button>
+        <button class="page-btn">3</button>
+        <button class="page-btn">
+            <i class="material-icons">chevron_right</i>
+        </button>
+    </div>
+
+
+
 </div>

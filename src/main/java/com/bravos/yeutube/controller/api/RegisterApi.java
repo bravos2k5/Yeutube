@@ -85,7 +85,7 @@ public class RegisterApi extends HttpServlet {
     }
 
     private void handleRegister(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        Jedis jedis = RedisConnectionPool.getInstance().getJedisPool().getResource();
+        Jedis jedis = RedisConnectionPool.getInstance().getResource();
         VerificationRequest request = objectMapper.readValue(req.getReader(),VerificationRequest.class);
         Cookie[] cookies = req.getCookies();
         PrintWriter writer = resp.getWriter();

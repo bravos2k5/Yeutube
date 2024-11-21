@@ -20,13 +20,12 @@
         </div>
     </div>
 
-    <div class="search-box">
+    <form class="search-box" action="">
         <input type="text" class="search-input" placeholder="Tìm kiếm theo email...">
         <button class="btn btn-info">
             <i class="material-icons">search</i>
-            Tìm kiếm
         </button>
-    </div>
+    </form>
 
     <div class="table-container">
         <table>
@@ -50,7 +49,6 @@
                     <td>
                         <button class="btn btn-danger">
                             <i class="material-icons">delete</i>
-                            Xóa
                         </button>
                     </td>
                 </tr>

@@ -24,7 +24,7 @@ public class RedisUtils {
      */
     public static <T> T getKeyWithLockCache(String key, Class<T> clazz, long cacheExpSeconds,
                                             long lockExpMs, long retryMs , Supplier<T> fallBackFunction) {
-        try (Jedis jedis = RedisConnectionPool.getInstance().getJedisPool().getResource()) {
+        try (Jedis jedis = RedisConnectionPool.getInstance().getResource()) {
             String value = jedis.get(key);
 
             if (value != null) {
@@ -87,8 +87,7 @@ public class RedisUtils {
     public static <T> T getHKeyWithLockCache(String key, Class<T> clazz, String field, long cacheExpSeconds,
                                               long lockExpMs, Supplier<T> fallBackFunction) {
 
-        JedisPool jedisPool = RedisConnectionPool.getInstance().getJedisPool();
-        try (Jedis jedis = jedisPool.getResource()) {
+        try (Jedis jedis = RedisConnectionPool.getInstance().getResource()) {
             String value = jedis.hget(key,field);
             if (value != null) {
                 return parseValue(value, clazz);

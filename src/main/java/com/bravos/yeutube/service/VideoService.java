@@ -39,7 +39,7 @@ public class VideoService {
     }
 
     public void updateViewCount(UUID id) {
-        try (Jedis jedis = RedisConnectionPool.getInstance().getJedisPool().getResource()) {
+        try (Jedis jedis = RedisConnectionPool.getInstance().getResource()) {
             String key = "viewsList";
             String fieldName = id.toString();
             String value = jedis.hget(key,fieldName);
@@ -49,20 +49,21 @@ public class VideoService {
             }
             String lockKey = "lock:" + key + ":" + id;
             String lockValue = UUID.randomUUID().toString();
-            String lockResult = jedis.set(lockKey, lockValue, SetParams.setParams().nx().px(100));
+            String lockResult = jedis.set(lockKey, lockValue, SetParams.setParams().nx().px(500));
             if (lockResult.equals("OK")) {
                 try {
                     jedis.hset(key,fieldName, "1");
                 } finally {
-                    if (jedis.get(lockKey).equals(lockValue)) {
+                    String lKey = jedis.get(lockKey);
+                    if (lKey != null && lKey.equals(lockValue)) {
                         jedis.del(lockKey);
                     }
                 }
             }
             else {
                 try {
-                    Thread.sleep(150);
-                    jedis.incr(key);
+                    Thread.sleep(300);
+                    jedis.hincrBy(key,fieldName,1);
                 } catch (InterruptedException | NumberFormatException e) {
                     Thread.currentThread().interrupt();
                     throw new RuntimeException("Error when updating view count");
@@ -78,7 +79,7 @@ public class VideoService {
     }
 
     public Long getIncreaseViewCount(UUID id) {
-        try (Jedis jedis = RedisConnectionPool.getInstance().getJedisPool().getResource()) {
+        try (Jedis jedis = RedisConnectionPool.getInstance().getResource()) {
             String key = "viewsList";
             String fieldName = id.toString();
             String value = jedis.hget(key,fieldName);
@@ -94,7 +95,7 @@ public class VideoService {
 
     public Long getVideoCount() {
         return RedisUtils.getKeyWithLockCache("videoCount", Long.class,
-                120,200, 200,videoRepository::getCountVideo);
+                120,300, 200,videoRepository::getCountVideo);
     }
 
     public Long getMaxPageVideo(int pageSize) {

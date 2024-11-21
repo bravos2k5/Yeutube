@@ -34,7 +34,7 @@ public class AuthService {
     }
 
     public int generateRegisterOtp(String key, RegisterApi.Request request, int expSecond) {
-        try(Jedis jedis = RedisConnectionPool.getInstance().getJedisPool().getResource()) {
+        try(Jedis jedis = RedisConnectionPool.getInstance().getResource()) {
             int code = random.nextInt(100000,999999);
             Map<String, String> data = new HashMap<>();
             data.put("username",request.getUsername());
@@ -50,9 +50,11 @@ public class AuthService {
     }
 
     public Cookie generateLoginCookie(UserInfo user, int expSeconds) {
-        String token = JwtUtils.generateToken(user,24 * 60 * 60 * 1000);
+        String token = JwtUtils.generateToken(user,expSeconds > 0 ? expSeconds * 1000L : 3600 * 12);
         Cookie cookie = new Cookie("accessToken",token);
-        cookie.setMaxAge(expSeconds);
+        if (expSeconds > 0) {
+            cookie.setMaxAge(expSeconds);
+        }
         cookie.setPath("/");
         cookie.setHttpOnly(true);
         return cookie;

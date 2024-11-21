@@ -4,14 +4,16 @@
 <div class="main-content">
     <div class="users-header">
         <h1>Quản lý người dùng</h1>
-        <div class="search-bar">
-            <form method="GET" action="${pageContext.request.contextPath}/admin/users">
-                <input name="search" type="text" placeholder="Tìm kiếm người dùng...">
-                <button class="btn btn-primary">
-                    Search
-                </button>
-            </form>
-        </div>
+        <form class="search-bar" method="GET" action="${pageContext.request.contextPath}/admin/users">
+            <select name="option">
+                <option ${param.get("option") == "username" ? "selected" : ""} value="username">ID (username)</option>
+                <option ${param.get("option") == "keyword" ? "selected" : ""} value="keyword">Full name / Email</option>
+            </select>
+            <input value="${search}" name="search" type="text" placeholder="Tìm kiếm người dùng...">
+            <button class="btn btn-primary">
+                <i class="material-icons">search</i>
+            </button>
+        </form>
     </div>
 
     <div class="users-table">
@@ -49,15 +51,23 @@
         </table>
     </div>
 
-    <div class="pagination">
-        <button class="page-btn">
-            <i class="material-icons">chevron_left</i>
-        </button>
-        <button class="page-btn active">1</button>
-        <button class="page-btn">2</button>
-        <button class="page-btn">3</button>
-        <button class="page-btn">
-            <i class="material-icons">chevron_right</i>
-        </button>
-    </div>
+    <jsp:useBean id="pageList" scope="request" type="java.util.List<java.lang.Long>"/>
+    <c:if test="${pageList.size() > 1}">
+        <div class="pagination">
+            <c:if test="${currentPage > 1}">
+                <button class="page-btn">
+                    <i class="material-icons">chevron_left</i>
+                </button>
+            </c:if>
+            <c:forEach var="page" items="${pageList}">
+                <button class="page-btn ${currentPage == page ? "active" : ""}">${page}</button>
+            </c:forEach>
+            <c:if test="${currentPage < maxPage}">
+                <button class="page-btn">
+                    <i class="material-icons">chevron_right</i>
+                </button>
+            </c:if>
+        </div>
+    </c:if>
+
 </div>

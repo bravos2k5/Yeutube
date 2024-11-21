@@ -3,7 +3,7 @@ package com.bravos.yeutube.config;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
-import org.hibernate.HibernateException;
+
 
 public class HibernateConfig {
 
@@ -18,16 +18,13 @@ public class HibernateConfig {
     }
 
     public static EntityManager entityManager() {
-        try {
-            return entityManagerFactory.createEntityManager();
-        } catch (HibernateException e) {
-            throw new RuntimeException(e);
-        }
+        return entityManagerFactory.createEntityManager();
     }
 
     public static void shutdown() {
         try {
             entityManagerFactory.close();
+            System.out.println("Database connection closed");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

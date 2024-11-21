@@ -4,10 +4,7 @@ import com.bravos.yeutube.model.Favourite;
 import com.bravos.yeutube.model.Share;
 import com.bravos.yeutube.model.User;
 import com.bravos.yeutube.model.Video;
-import com.bravos.yeutube.service.FavouriteService;
-import com.bravos.yeutube.service.ShareService;
-import com.bravos.yeutube.service.UserService;
-import com.bravos.yeutube.service.VideoService;
+import com.bravos.yeutube.service.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -15,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet(urlPatterns = {"/admin",
@@ -35,6 +33,7 @@ public class AdminServlet extends HttpServlet {
     private FavouriteService favouriteService;
     private VideoService videoService;
     private ShareService shareService;
+    private CountService countService;
 
     @Override
     public void init()  {
@@ -42,6 +41,7 @@ public class AdminServlet extends HttpServlet {
         favouriteService = new FavouriteService();
         videoService = new VideoService();
         shareService = new ShareService();
+        countService = new CountService();
     }
 
     @Override
@@ -85,21 +85,78 @@ public class AdminServlet extends HttpServlet {
         }
         req.setAttribute("link",link);
         req.getRequestDispatcher(getServletContext().getContextPath() + "/admin/admin.jsp").forward(req,resp);
+
+    }
+
+    /**
+     *
+     *
+     * @return current page
+     *
+     */
+    private int handlePagination(HttpServletRequest req, HttpServletResponse resp, long maxPage) throws IOException {
+
+        int page = 1;
+        if (req.getParameter("page") != null) {
+            try {
+                page = Integer.parseInt(req.getParameter("page"));
+            } catch (NumberFormatException e) {
+                resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+                throw new IllegalArgumentException("Page must be a number");
+            }
+        }
+        List<Long> pageList = new ArrayList<>();
+        for(long i = page - 5; i < page + 5; i++) {
+            if(i > 0 && i <= maxPage) {
+                pageList.add(i);
+            }
+        }
+
+        req.setAttribute("maxPage",maxPage);
+        req.setAttribute("pageList",pageList);
+        req.getSession().setAttribute("currentPage",page);
+
+        return page;
+
     }
 
     private void dashboardHandler(HttpServletRequest req, HttpServletResponse resp) {
+        long allUserCount = userService.getCountUser();
+        long currentActive = countService.getCurrentSessionCount();
+        long totalAccess = countService.getTotalVisitCount();
+        long videoCount = videoService.getVideoCount();
+
+        req.setAttribute("allUserCount",allUserCount);
+        req.setAttribute("currentActive",currentActive);
+        req.setAttribute("totalAccess",totalAccess);
+        req.setAttribute("videoCount",videoCount);
 
     }
 
-    private void userViewHandler(HttpServletRequest req, HttpServletResponse resp) {
+    private void userViewHandler(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String searchKey = req.getParameter("search");
+        String option = req.getParameter("option");
+        final int pageSize = 15;
         List<User> userList;
+
         if(searchKey == null || searchKey.isBlank()) {
             userList = userService.findAll();
+            handlePagination(req,resp,getMaxPage(userService.getCountUser(), pageSize));
         }
         else {
-            userList = List.of(userService.findById(searchKey));
+            if("username".equals(option)) {
+                userList = List.of(userService.findById(searchKey));
+                handlePagination(req,resp,1);
+            }
+            else if("keyword".equals(option)) {
+                int page = handlePagination(req,resp,getMaxPage(userService.countByKeyword(searchKey),pageSize));
+                userList = userService.findByKeyword(searchKey,page,pageSize);
+            }
+            else {
+                throw new IllegalArgumentException("Wrong option");
+            }
         }
+
         req.setAttribute("search",searchKey);
         req.setAttribute("userList",userList);
     }
@@ -157,6 +214,10 @@ public class AdminServlet extends HttpServlet {
         }
         req.setAttribute("search",searchKey);
         req.setAttribute("favourites",favourites);
+    }
+
+    private Long getMaxPage(Long videoCount, int pageSize) {
+        return (long) Math.ceil((double) videoCount / pageSize);
     }
 
 }

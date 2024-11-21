@@ -6,14 +6,12 @@
         <h1>Quản lý Favourite</h1>
     </div>
 
-    <div class="search-box">
-        <form style="display: flex; width: 100%" method="GET" action="${pageContext.request.contextPath}/admin/favourites">
-            <input name="search" type="text" class="search-input" placeholder="Tìm kiếm...">
-            <button type="submit" class="btn btn-info">
-                <i class="material-icons">search</i>
-            </button>
-        </form>
-    </div>
+    <form class="search-box" style="display: flex; width: 100%" method="GET" action="${pageContext.request.contextPath}/admin/favourites">
+        <input name="search" type="text" class="search-input" placeholder="Tìm kiếm...">
+        <button type="submit" class="btn btn-info">
+            <i class="material-icons">search</i>
+        </button>
+    </form>
 
     <div class="table-container">
         <table>
@@ -38,7 +36,6 @@
                     <td>
                         <button class="btn btn-danger">
                             <i class="material-icons">delete</i>
-                            Xóa
                         </button>
                     </td>
                 </tr>

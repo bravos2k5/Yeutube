@@ -10,17 +10,17 @@
             <property name="hibernate.connection.url" value="jdbc:sqlserver://localhost:1433;databaseName=yeutube;encrypt=false;trustServerCertificate=false;integratedSecurity=false;"/>
             <property name="hibernate.connection.username" value="sa"/>
             <property name="hibernate.connection.password" value="16122005viP@"/>
+
+            <property name="hibernate.hikari.maximumPoolSize" value="25"/>
+            <property name="hibernate.hikari.minimumIdle" value="5"/>
+            <property name="hibernate.hikari.autoCommit" value="false"/>
+            <property name="hibernate.hikari.connectionTimeout" value="60000"/>
+            
             <property name="hibernate.hbm2ddl.auto" value="update"/>
-            <property name="hibernate.connection.autocommit" value="false"/>
             <property name="hibernate.show_sql" value="true"/>
             <property name="hibernate.format_sql" value="false"/>
             <property name="hibernate.connection.isolation" value="2"/>
             <property name="hibernate.jdbc.batch_size" value="50"/>
-            <property name="hibernate.c3p0.min_size" value="5"/>
-            <property name="hibernate.c3p0.max_size" value="20"/>
-            <property name="hibernate.c3p0.timeout" value="300"/>
-            <property name="hibernate.c3p0.idle_test_period" value="600"/>
-            <property name="hibernate.c3p0.acquire_increment" value="2"/>
         </properties>
     </persistence-unit>
 </persistence>

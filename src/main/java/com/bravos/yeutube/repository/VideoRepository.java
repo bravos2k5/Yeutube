@@ -55,8 +55,7 @@ public class VideoRepository extends Repository<Video, UUID> {
     }
 
     public Long getCountVideo() {
-        String hql = "SELECT COUNT(v) FROM Video v";
-        return executeHqlSingleData(hql, null, Long.class).getFirst();
+        return countAll();
     }
 
     public List<Video> findByTitle(String title, int page, int pageSize) {

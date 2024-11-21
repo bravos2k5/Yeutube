@@ -70,11 +70,7 @@ function loginHandle() {
         if (data.status === 1) {
             showAlert('error', 'Lỗi', `${data.message}`);
         } else {
-            showAlert('success', 'Thành công', 'Đăng nhập thành công tự chuyển hướng sau 3 giây');
-            document.getElementById('btnLogin').hidden = true;
-            setTimeout(function () {
-                window.location.href = "/home";
-            }, 3000);
+            window.location.href = data.message;
         }
     })
 }

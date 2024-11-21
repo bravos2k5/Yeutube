@@ -1,5 +1,6 @@
 package com.bravos.yeutube.config;
 
+import com.bravos.yeutube.service.CountService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Query;
@@ -10,14 +11,20 @@ import java.util.*;
 public class ScheduleEvent {
 
     private final Timer updateViewTimer;
+    private final Timer updateVisitTimer;
+    private final CountService countService;
 
     public ScheduleEvent() {
         this.updateViewTimer = updateView();
+        this.updateVisitTimer = updateVisitCount();
+        countService = new CountService();
     }
 
     public void cancelAllProcess() {
-        updateViewHandle();
         updateViewTimer.cancel();
+        updateViewHandle();
+        updateVisitTimer.cancel();
+        updateVisitCountHandle();
     }
 
     private Timer updateView() {
@@ -28,16 +35,36 @@ public class ScheduleEvent {
                 updateViewHandle();
             }
         };
-        timer.scheduleAtFixedRate(task, 300000, 300000);
+        timer.scheduleAtFixedRate(task, 60000, 60000);
         return timer;
     }
 
+    private Timer updateVisitCount() {
+        Timer timer = new Timer();
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                updateViewHandle();
+            }
+        };
+        timer.scheduleAtFixedRate(task,305000,305000);
+        return timer;
+    }
+
+    private void updateVisitCountHandle() {
+        countService.saveVisitCount();
+    }
+
     private void updateViewHandle() {
-        Jedis jedis = RedisConnectionPool.getInstance().getJedisPool().getResource();
-        Map<String, String> viewsMap = jedis.hgetAll("viewsList");
-        jedis.del("viewsList");
-        jedis.close();
-        if (viewsMap.isEmpty()) {
+        Map<String, String> viewsMap;
+        try(Jedis jedis = RedisConnectionPool.getInstance().getResource()) {
+            viewsMap = jedis.hgetAll("viewsList");
+            jedis.del("viewsList");
+            if (viewsMap.isEmpty()) {
+                return;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
             return;
         }
         try (EntityManager entityManager = HibernateConfig.entityManager()) {
@@ -71,7 +98,7 @@ public class ScheduleEvent {
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 }

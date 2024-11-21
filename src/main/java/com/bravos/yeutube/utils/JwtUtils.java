@@ -61,6 +61,7 @@ public class JwtUtils {
         UserInfo userInfo = null;
         if(JwtUtils.isValid(token,username)) {
             Claims claims = extractAllClaims(token);
+            if(claims == null) return null;
             userInfo = new UserInfo();
             userInfo.setId(username);
             userInfo.setAdmin(claims.get("role", String.class).equals("ADMIN"));
@@ -82,6 +83,7 @@ public class JwtUtils {
                 return false;
             }
             Claims claims = extractAllClaims(token);
+            if(claims == null) return false;
             Date exp = claims.getExpiration();
             String tokenName = claims.getSubject();
             return exp.after(new Date()) && tokenName.equals(username);

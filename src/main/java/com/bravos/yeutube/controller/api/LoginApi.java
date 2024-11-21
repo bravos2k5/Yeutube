@@ -37,12 +37,15 @@ public class LoginApi extends HttpServlet {
         if(user == null)
             loginResponse = new LoginResponse(1, "Thông tin đăng nhập không chính xác!");
         else {
-            loginResponse = new LoginResponse(0,"Đăng nhập thành công!");
             HttpSession session = req.getSession();
             UserInfo userInfo = new UserInfo(user);
             session.setAttribute("user",userInfo);
             int expSeconds = loginRequest.getRemember() ? 24 * 60 * 60 : -1;
             resp.addCookie(authService.generateLoginCookie(userInfo,expSeconds));
+
+            String beforeLoginPage = (String) session.getAttribute("pageBeforeLogin");
+
+            loginResponse = new LoginResponse(0,beforeLoginPage != null ? beforeLoginPage : "/home");
         }
         writer.print(objectMapper.writeValueAsString(loginResponse));
         writer.flush();
