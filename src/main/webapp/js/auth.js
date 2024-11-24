@@ -1,4 +1,4 @@
-import { showAlert } from './popup.js'
+import {hideLoading,addEventButton,showAlert,showLoading} from './library.js'
 
 function toggleTheme() {
     const html = document.documentElement;
@@ -15,6 +15,11 @@ function showVerificationModal() {
     modal.show();
 }
 
+function hideVerificationModal() {
+    const modal = new bootstrap.Modal(document.getElementById('verificationModal'));
+    modal.hide();
+}
+
 document.querySelectorAll('.verification-input').forEach((input, index, inputs) => {
     input.addEventListener('input', function () {
         if (this.value.length === 1) {
@@ -28,14 +33,6 @@ document.querySelectorAll('.verification-input').forEach((input, index, inputs) 
         }
     });
 });
-
-function showLoading() {
-    document.getElementById("overlay").style.display = "flex";
-}
-
-function hideLoading() {
-    document.getElementById("overlay").style.display = "none";
-}
 
 function loginHandle() {
 
@@ -157,32 +154,25 @@ function sendCode() {
         if (data.status !== 0) {
             showAlert('error', 'Lỗi', `${data.message}`);
         } else {
-            showAlert('success', 'Thành công', 'Đăng ký thành công tự chuyển hướng sau 3 giây');
+            showAlert('success', 'Thành công', 'Đăng ký thành công');
             document.getElementById('btnSendCode').hidden = true;
-            setTimeout(function () {
-                window.location.href = "/home";
-            }, 3000);
+            window.location.href = "/home";
         }
     });
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-    const button = document.getElementById("btnLogin");
-    button.addEventListener("click", loginHandle);
-});
+function reSendCode() {
+    hideVerificationModal();
+    const inputs = document.querySelectorAll('.verification-input');
+    inputs.forEach(input => {
+        input.value = '';
+    });
+    registerHandle();
+}
 
-document.addEventListener("DOMContentLoaded", function() {
-    const button = document.getElementById("btnRegister");
-    button.addEventListener("click", registerHandle);
-});
-
-document.addEventListener("DOMContentLoaded", function() {
-    const button = document.getElementById("btnSendCode");
-    button.addEventListener("click", sendCode);
-});
-
-document.addEventListener("DOMContentLoaded", function() {
-    const button = document.getElementById("theme-switch");
-    button.addEventListener("click", toggleTheme);
-});
+addEventButton('reSend',reSendCode);
+addEventButton('btnLogin',loginHandle);
+addEventButton('btnRegister',registerHandle);
+addEventButton('btnSendCode',sendCode);
+addEventButton('theme-switch',toggleTheme);
 

@@ -1,4 +1,33 @@
-import {showAlert} from "./popup.js";
+import {addEventButton, showAlert} from "./library.js";
+
+
+let videoId = document.getElementById('video-id').innerHTML;
+
+window.onload = function () {
+    setTimeout(function () {
+        updateViewCount();
+    },5000);
+};
+
+function updateViewCount() {
+    fetch('/api/public/updateViewCount', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({videoId: videoId})
+    }).then(response => {
+        if (!response.ok) {
+            console.log("Error update views");
+        }
+    });
+}
+
+
+const emailInput = document.getElementById('emailInput');
+const emailChips = document.getElementById('emailChips');
+const emailList = document.getElementById('emailList');
+let emails = [];
 
 function openSharePopup() {
 
@@ -16,12 +45,6 @@ function closeSharePopup() {
     document.getElementById('sharePopup').style.display = 'none';
     document.body.style.overflow = 'auto';
 }
-
-// Xử lý email chips
-const emailInput = document.getElementById('emailInput');
-const emailChips = document.getElementById('emailChips');
-const emailList = document.getElementById('emailList');
-let emails = [];
 
 emailInput.addEventListener('keydown', function (e) {
     if (e.key === 'Enter') {
@@ -75,8 +98,7 @@ function renderEmailChips() {
     emails.forEach(email => addEmailChip(email));
 }
 
-document.getElementById('shareForm').addEventListener('submit', function (e) {
-    e.preventDefault();
+function shareHandle() {
     const message = document.getElementById('message').value;
     const shareData = {
         videoId: document.getElementById('video-id').innerHTML,
@@ -97,82 +119,56 @@ document.getElementById('shareForm').addEventListener('submit', function (e) {
         }
         return response.json();
     }).then(data => {
-       if(data.status === 0) {
-           showAlert('success','Thành công', 'Chia sẻ thành công rồi, 2h đêm code như cờ hó');
-       }
+        if(data.status === 0) {
+            showAlert('success','Thành công', 'Chia sẻ thành công rồi nha');
+        }
     });
 
     closeSharePopup();
     this.reset();
     emails = [];
     renderEmailChips();
-});
+}
 
-document.addEventListener("DOMContentLoaded", function () {
-    const button = document.getElementById("btnShare");
-    button.addEventListener("click", openSharePopup);
-});
+async function likeHandle() {
+    const btnLike = document.getElementById('btnLike');
+    const likeCount = document.getElementById('likeCount');
+    const videoId = document.getElementById('video-id').textContent;
+    const isLogin = document.getElementById('isLogin').value === 'true';
 
+    if (!isLogin) {
+        showAlert('warning','Chưa đăng nhập','Bạn cần đăng nhập để Like');
+        return;
+    }
 
-document.addEventListener("DOMContentLoaded", function () {
-    const button = document.getElementById("btnClose1");
-    button.addEventListener("click", closeSharePopup);
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-    const button = document.getElementById("btnClose2");
-    button.addEventListener("click", closeSharePopup);
-});
+    fetch(`/api/private/like?videoId=${videoId}`,{
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).then(response => {
+        if(!response.ok) {
+            return Promise.reject(new Error('Máy chủ không phản hồi'));
+        }
+        return response.json();
+    }).then(data => {
+        const isLiked = data.liked;
+        btnLike.classList.toggle('liked', isLiked);
+        btnLike.querySelector('.like-icon').textContent = isLiked ? 'thumb_up' : 'thumb_up_off_alt';
+        likeCount.textContent = data.countLike;
+    });
+}
 
 window.removeEmail = function (email) {
     emails = emails.filter(e => e !== email);
     renderEmailChips();
 };
 
-// Like - Unlike
+addEventButton('btnShare',shareHandle);
+addEventButton('btnOpenShare',openSharePopup);
+addEventButton('btnClose1',closeSharePopup);
+addEventButton('btnClose2',closeSharePopup);
+addEventButton('btnLike',likeHandle);
 
 
-
-document.addEventListener('DOMContentLoaded', () => {
-
-    const likeBtn = document.getElementById('likeBtn');
-    const likeCount = document.getElementById('likeCount');
-    const videoId = document.getElementById('video-id').textContent;
-    const isLogin = document.getElementById('isLogin').value === 'true';
-
-    const fetchData = async (url, options = {}) => {
-        try {
-            const response = await fetch(url, options);
-            return await response.json();
-        } catch (error) {
-            console.error('Error during fetch operation:', error);
-            return null;
-        }
-    };
-
-    likeBtn.addEventListener('click', async () => {
-
-        if (!isLogin) {
-            showAlert('warning','Chưa đăng nhập','Bạn cần đăng nhập để Like');
-            return;
-        }
-
-        fetch(`/api/private/like?videoId=${videoId}`,{
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }).then(response => {
-            if(!response.ok) {
-                return Promise.reject(new Error('Máy chủ không phản hồi'));
-            }
-            return response.json();
-        }).then(data => {
-            const isLiked = data.liked;
-            likeBtn.classList.toggle('liked', isLiked);
-            likeBtn.querySelector('.like-icon').textContent = isLiked ? 'thumb_up' : 'thumb_up_off_alt';
-            likeCount.textContent = data.countLike;
-        });
-    });
-});
 

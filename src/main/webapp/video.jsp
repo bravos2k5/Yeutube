@@ -18,11 +18,11 @@
             <div class="video-stats">
                 <div><span id="views">${video.views}</span> lượt xem • ${time}</div>
                 <div class="likes-container">
-                    <button class="action-btn like-btn" id="likeBtn">
+                    <button class="action-btn like-btn" id="btnLike">
                         <i class="material-icons like-icon">${isLiked ? 'thumb_up' : 'thumb_up_off_alt'}</i>
                         <span id="likeCount">${like}</span>
                     </button>
-                    <button class="action-btn share-btn" id="btnShare">
+                    <button class="action-btn share-btn" id="btnOpenShare">
                         <i class="material-icons">share</i>
                         <span>Chia sẻ</span>
                     </button>
@@ -71,6 +71,7 @@
             </button>
         </div>
         <form class="share-form" id="shareForm">
+
             <div class="form-group">
                 <label for="emails">Email người nhận:</label>
                 <div class="email-chips" id="emailChips">
@@ -86,36 +87,11 @@
 
             <div class="form-actions">
                 <button id="btnClose2" type="button" class="btn btn-secondary">Hủy</button>
-                <button type="submit" class="btn btn-primary">Chia sẻ</button>
+                <button id="btnShare" type="button" class="btn btn-primary">Chia sẻ</button>
             </div>
+
         </form>
     </div>
 </div>
 
 <script type="module" src="${pageContext.request.contextPath}/js/video.js"></script>
-
-<script>
-
-    let videoId = document.getElementById('video-id').innerHTML;
-
-    window.onload = function () {
-        setTimeout(function () {
-            updateViewCount();
-        },5000);
-    };
-
-    function updateViewCount() {
-        fetch('/api/public/updateViewCount', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({videoId: videoId})
-        }).then(response => {
-            if (!response.ok) {
-                console.log("Error update views")
-            }
-        });
-    }
-
-</script>

@@ -1,3 +1,4 @@
+<jsp:useBean id="user" scope="request" type="com.bravos.yeutube.model.User"/>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <div class="main-content">
     <div class="edit-header">
@@ -13,33 +14,24 @@
         <form>
             <div class="form-group">
                 <label for="username">Tên đăng nhập</label>
-                <input type="text" id="username" class="form-control" value="johndoe">
+                <input readonly type="text" id="username" class="form-control" value="${user.id}">
             </div>
 
             <div class="form-group">
                 <label for="fullname">Họ và tên</label>
-                <input type="text" id="fullname" class="form-control" value="John Doe">
+                <input type="text" id="fullname" class="form-control" value="${user.fullName}">
             </div>
 
             <div class="form-group">
                 <label for="email">Email</label>
-                <input type="email" id="email" class="form-control" value="john.doe@example.com">
+                <input required type="email" id="email" class="form-control" value="${user.email}">
             </div>
 
             <div class="form-group">
                 <label for="role">Vai trò</label>
                 <select id="role" class="form-control">
-                    <option value="admin">Admin</option>
-                    <option value="user">User</option>
-                    <option value="moderator">Moderator</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="status">Trạng thái</label>
-                <select id="status" class="form-control">
-                    <option value="active">Hoạt động</option>
-                    <option value="inactive">Không hoạt động</option>
+                    <option ${user.admin == true ? 'selected' : ''} value="admin">Admin</option>
+                    <option ${user.admin == false ? 'selected' : ''} value="user">User</option>
                 </select>
             </div>
 
@@ -54,10 +46,12 @@
             </div>
 
             <div class="form-actions">
-                <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                <button id="btnSave" type="button" class="btn btn-primary">Lưu thay đổi</button>
                 <button type="button" class="btn btn-secondary">Hủy</button>
             </div>
         </form>
     </div>
 </div>
+
+<script type="module" src="${pageContext.request.contextPath}/js/user-update.js"></script>
 

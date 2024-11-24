@@ -51,7 +51,7 @@
       </div>
 
       <div class="form-actions">
-        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+        <button type="submit" class="btn btn-primary">Upload</button>
         <button type="button" class="btn btn-secondary">Hủy</button>
       </div>
     </form>

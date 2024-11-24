@@ -2,7 +2,6 @@ package com.bravos.yeutube.controller.api;
 
 import com.bravos.yeutube.dto.UserInfo;
 import com.bravos.yeutube.model.User;
-import com.bravos.yeutube.service.AuthService;
 import com.bravos.yeutube.service.UserService;
 import com.bravos.yeutube.utils.RegexUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,6 +45,10 @@ public class UserApi extends HttpServlet {
         }
         if(uri.endsWith("changepassword")) {
             changePassword(req,resp);
+            return;
+        }
+        if(uri.endsWith("update")) {
+            adminUpdate(req,resp);
             return;
         }
     }
@@ -114,6 +117,32 @@ public class UserApi extends HttpServlet {
             Response response = new Response(1,"Đổi mật khẩu thất bại!");
             sendReponse(response,resp);
         }
+
+    }
+
+    public void adminUpdate(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        UpdateUserRequest updateUserRequest = objectMapper.readValue(req.getReader(), UpdateUserRequest.class);
+
+        User user = userService.findById(updateUserRequest.getUsername());
+
+        if(user == null) {
+            sendReponse(new Response(0,"User không tồn tại"), resp);
+            return;
+        }
+
+        user.setId(updateUserRequest.getUsername());
+        user.setFullName(updateUserRequest.getFullName());
+        if (updateUserRequest.getNewPassword() != null && !updateUserRequest.getNewPassword().isBlank()) {
+            user.setPassword(BCrypt.hashpw(updateUserRequest.getNewPassword(),BCrypt.gensalt()));
+        }
+        user.setEmail(updateUserRequest.getEmail());
+        user.setAdmin(updateUserRequest.isAdmin());
+
+        user = userService.update(user);
+
+        String message = user == null ? "Cập nhật thất bại" : "Cập nhật thành công";
+
+        sendReponse(new Response(user == null ? 0 : 1,message),resp);
 
     }
 

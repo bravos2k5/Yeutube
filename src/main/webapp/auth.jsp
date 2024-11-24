@@ -14,7 +14,7 @@
 <div id="theme-switch" class="theme-switch">
     <i class="fas fa-moon"></i>
 </div>
-<<div class="notification-container" id="notificationContainer"></div>
+
 <div class="container auth-container">
     <div class="auth-card animate-card">
         <div class="text-center mb-4">
@@ -63,7 +63,6 @@
         </ul>
 
         <div class="tab-content">
-            <!-- Đăng nhập -->
             <div class="tab-pane fade show active" id="login">
                 <form>
                     <div class="mb-3">
@@ -82,8 +81,6 @@
                     </div>
                 </form>
             </div>
-
-            <!-- Đăng ký -->
             <div class="tab-pane fade" id="register">
                 <form id="registerForm">
                     <div class="mb-3">
@@ -115,7 +112,6 @@
     </div>
 </div>
 
-<!-- Modal Xác thực -->
 <div class="modal fade verification-modal" id="verificationModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -133,8 +129,7 @@
                     <input type="text" maxlength="1" class="verification-input">
                     <input type="text" maxlength="1" class="verification-input">
                 </div>
-                <p class="text-muted">Không nhận được mã? <a href="#" style="color: var(--primary-color)">Gửi lại</a>
-                </p>
+                <p class="text-muted">Không nhận được mã? <a id="reSend" href="#" style="color: var(--primary-color)">Gửi lại</a></p>
             </div>
             <div class="modal-footer border-0">
                 <button id="btnSendCode" type="button" class="btn btn-primary w-100">Xác nhận</button>
@@ -148,6 +143,7 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
-<script type="module" src="${pageContext.request.contextPath}/js/login.js"></script>
+<script type="module" src="${pageContext.request.contextPath}/js/auth.js"></script>
 </body>
 </html>
+

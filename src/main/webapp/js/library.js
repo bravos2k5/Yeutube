@@ -1,11 +1,14 @@
+const notificationDiv = document.createElement('div');
+notificationDiv.className = 'notification-container';
+notificationDiv.id = 'notificationContainer';
+document.body.insertBefore(notificationDiv, document.body.firstChild);
+
 function showNotification(type, title, message) {
     const container = document.getElementById('notificationContainer');
 
-    // Tạo notification element
     const notification = document.createElement('div');
     notification.className = `notification ${type}`;
 
-    // Icon cho từng loại thông báo
     const icons = {
         success: 'fas fa-check-circle',
         error: 'fas fa-times-circle',
@@ -31,9 +34,24 @@ function showNotification(type, title, message) {
 
     setTimeout(() => {
         notification.remove();
-    }, 3000);
+    }, 3500);
 }
 
 export function showAlert(type, title, message) {
     showNotification(type, title, message);
+}
+
+export function showLoading() {
+    document.getElementById("overlay").style.display = "flex";
+}
+
+export function hideLoading() {
+    document.getElementById("overlay").style.display = "none";
+}
+
+export function addEventButton(buttonId, event) {
+    document.addEventListener("DOMContentLoaded", function () {
+        const button = document.getElementById(buttonId);
+        button.addEventListener("click", event);
+    });
 }

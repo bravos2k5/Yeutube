@@ -162,7 +162,9 @@ public class AdminServlet extends HttpServlet {
     }
 
     private void userUpdaterHandler(HttpServletRequest req, HttpServletResponse resp) {
-
+        String userId = req.getParameter("id");
+        User user = userService.findById(userId);
+        req.setAttribute("user",user);
     }
 
     private void videoViewHandler(HttpServletRequest req, HttpServletResponse resp) {

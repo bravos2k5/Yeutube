@@ -37,9 +37,11 @@
                     <td>${userItem.admin ? "Admin" : "User"}</td>
                     <td>
                         <div class="action-buttons">
-                            <button class="btn btn-edit">
-                                <i class="material-icons">edit</i>
-                            </button>
+                            <a href="${pageContext.request.contextPath}/admin/users/update?id=${userItem.id}">
+                                <button class="btn btn-edit">
+                                    <i class="material-icons">edit</i>
+                                </button>
+                            </a>
                             <button class="btn btn-delete">
                                 <i class="material-icons">delete</i>
                             </button>

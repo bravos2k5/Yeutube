@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import redis.clients.jedis.Jedis;
 
 import java.io.IOException;
@@ -75,6 +76,20 @@ public class RegisterApi extends HttpServlet {
                 "Mã xác nhận đăng ký tài khoản của bạn là: " + code +
                         " Mã xác thực có hiệu lực 10 phút, không chia sẻ mã này cho bất kì ai")).start();
 
+        Cookie[] cookies = req.getCookies();
+        for(Cookie cookie : cookies) {
+            if(cookie.getName().equals("rKey")) {
+                try(Jedis jedis = RedisConnectionPool.getInstance().getResource()) {
+                    jedis.del(cookie.getValue());
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+                cookie.setValue("");
+                cookie.setMaxAge(0);
+                resp.addCookie(cookie);
+            }
+        }
+
         Cookie cookie = new Cookie("rKey",key);
         cookie.setHttpOnly(true);
         cookie.setMaxAge(600);
@@ -97,8 +112,7 @@ public class RegisterApi extends HttpServlet {
         }
         Map<String,String> data = jedis.hgetAll(key);
 
-        if(key == null || data == null || request == null ||
-                !request.getCode().equals(data.get("code"))) {
+        if(key == null || data == null || request == null || !BCrypt.checkpw(request.getCode(),data.get("code"))) {
             writer.print(objectMapper.writeValueAsString(new Response(1, "Mã xác thực không chính xác")));
             writer.flush();
             return;

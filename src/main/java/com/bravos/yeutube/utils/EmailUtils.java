@@ -66,6 +66,7 @@ public class EmailUtils {
     }
 
     public void sendEmail(String[] to, String subject, String text, List<String> fileNames) {
+
         MimeMessage msg = new MimeMessage(session);
         InternetAddress[] recipients = new InternetAddress[to.length];
         try {

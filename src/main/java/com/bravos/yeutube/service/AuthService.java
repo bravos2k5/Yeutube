@@ -40,7 +40,7 @@ public class AuthService {
             data.put("username",request.getUsername());
             data.put("password",BCrypt.hashpw(request.getPassword(),BCrypt.gensalt()));
             data.put("email",request.getEmail());
-            data.put("code", String.valueOf(code));
+            data.put("code", BCrypt.hashpw(String.valueOf(code),BCrypt.gensalt()));
             jedis.hset(key,data);
             jedis.expire(key,expSecond);
             return code;
