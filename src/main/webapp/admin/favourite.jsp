@@ -3,7 +3,7 @@
 
 <div class="main-content">
     <div class="content-header">
-        <h1>Quản lý Favourite</h1>
+        <h1>Thống kê yêu thích</h1>
     </div>
 
     <form class="search-box" style="display: flex; width: 100%" method="GET" action="${pageContext.request.contextPath}/admin/favourites">
@@ -33,11 +33,6 @@
                     <td>${favourite.user.id}</td>
                     <td>${favourite.video.title}</td>
                     <td>${favourite.likedDate}</td>
-                    <td>
-                        <button class="btn btn-danger">
-                            <i class="material-icons">delete</i>
-                        </button>
-                    </td>
                 </tr>
             </c:forEach>
 
@@ -45,38 +40,30 @@
         </table>
     </div>
 
-    <div class="pagination">
-        <button class="page-btn">
-            <i class="material-icons">chevron_left</i>
-        </button>
-        <button class="page-btn active">1</button>
-        <button class="page-btn">2</button>
-        <button class="page-btn">3</button>
-        <button class="page-btn">
-            <i class="material-icons">chevron_right</i>
-        </button>
-    </div>
+    <jsp:useBean id="pageList" scope="request" type="java.util.List<java.lang.Long>"/>
+    <c:if test="${pageList.size() > 1}">
+        <form method="GET" class="pagination" action="${pageContext.request.contextPath}/admin/users">
+            <c:if test="${currentPage > 1}">
+                <button name="page" value="1" class="page-btn">
+                    <i class="material-icons">first_page</i>
+                </button>
+                <button name="page" value="${currentPage - 1}" class="page-btn">
+                    <i class="material-icons">chevron_left</i>
+                </button>
+            </c:if>
+            <c:forEach var="page" items="${pageList}">
+                <button name="page" value="${page}" class="page-btn ${currentPage == page ? "active" : ""}">${page}</button>
+            </c:forEach>
+            <c:if test="${currentPage < maxPage}">
+                <button name="page" value="${currentPage + 1}" class="page-btn">
+                    <i class="material-icons">chevron_right</i>
+                </button>
+                <button name="page" value="${maxPage}" class="page-btn">
+                    <i class="material-icons">last_page</i>
+                </button>
+            </c:if>
+        </form>
+    </c:if>
 
 </div>
 
-<script>
-    document.querySelectorAll('.btn-danger').forEach(button => {
-        button.addEventListener('click', function() {
-            if(confirm('Bạn có chắc chắn muốn xóa mục này?')) {
-                console.log('Đã xóa');
-            }
-        });
-    });
-
-    document.querySelector('.btn-info').addEventListener('click', function() {
-        const searchTerm = document.querySelector('.search-input').value;
-        console.log('Tìm kiếm:', searchTerm);
-    });
-
-    document.querySelectorAll('.page-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            document.querySelectorAll('.page-btn').forEach(btn => btn.classList.remove('active'));
-            this.classList.add('active');
-        });
-    });
-</script>

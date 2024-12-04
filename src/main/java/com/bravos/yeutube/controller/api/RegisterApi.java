@@ -1,10 +1,13 @@
 package com.bravos.yeutube.controller.api;
 
+import com.bravos.yeutube.dto.Activity;
 import com.bravos.yeutube.dto.UserInfo;
 import com.bravos.yeutube.model.User;
 import com.bravos.yeutube.config.RedisConnectionPool;
 import com.bravos.yeutube.service.AuthService;
+import com.bravos.yeutube.service.LogService;
 import com.bravos.yeutube.service.UserService;
+import com.bravos.yeutube.utils.CookieUtils;
 import com.bravos.yeutube.utils.EmailUtils;
 import com.bravos.yeutube.utils.RegexUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,10 +50,15 @@ public class RegisterApi extends HttpServlet {
     }
 
     private boolean isValidRequest(Request request) {
-        return request != null &&
-                !request.getUsername().isBlank() &&
-                RegexUtils.checkPassword(request.getPassword()) > RegexUtils.CANT_USE &&
-                RegexUtils.isEmail(request.getEmail());
+        try {
+            return request != null &&
+                    !request.getUsername().isBlank() &&
+                    !request.getFullName().isBlank() &&
+                    RegexUtils.checkPassword(request.getPassword()) > RegexUtils.CANT_USE &&
+                    RegexUtils.isEmail(request.getEmail());
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     private void validateRegister(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -76,20 +84,6 @@ public class RegisterApi extends HttpServlet {
                 "Mã xác nhận đăng ký tài khoản của bạn là: " + code +
                         " Mã xác thực có hiệu lực 10 phút, không chia sẻ mã này cho bất kì ai")).start();
 
-        Cookie[] cookies = req.getCookies();
-        for(Cookie cookie : cookies) {
-            if(cookie.getName().equals("rKey")) {
-                try(Jedis jedis = RedisConnectionPool.getInstance().getResource()) {
-                    jedis.del(cookie.getValue());
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-                cookie.setValue("");
-                cookie.setMaxAge(0);
-                resp.addCookie(cookie);
-            }
-        }
-
         Cookie cookie = new Cookie("rKey",key);
         cookie.setHttpOnly(true);
         cookie.setMaxAge(600);
@@ -100,54 +94,62 @@ public class RegisterApi extends HttpServlet {
     }
 
     private void handleRegister(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        Jedis jedis = RedisConnectionPool.getInstance().getResource();
-        VerificationRequest request = objectMapper.readValue(req.getReader(),VerificationRequest.class);
-        Cookie[] cookies = req.getCookies();
-        PrintWriter writer = resp.getWriter();
-        String key = null;
-        for (Cookie cookie : cookies) {
-            if(cookie.getName().equals("rKey")) {
+        try(Jedis jedis = RedisConnectionPool.getInstance().getResource()) {
+            VerificationRequest request = objectMapper.readValue(req.getReader(),VerificationRequest.class);
+            Cookie[] cookies = req.getCookies();
+            PrintWriter writer = resp.getWriter();
+            String key = null;
+            Cookie cookie = CookieUtils.getCookie("rKey",cookies);
+
+            if(cookie != null) {
                 key = cookie.getValue();
             }
-        }
-        Map<String,String> data = jedis.hgetAll(key);
 
-        if(key == null || data == null || request == null || !BCrypt.checkpw(request.getCode(),data.get("code"))) {
-            writer.print(objectMapper.writeValueAsString(new Response(1, "Mã xác thực không chính xác")));
+            Map<String,String> data = null;
+
+            if (key != null) {
+                data = jedis.hgetAll(key);
+            }
+
+            if(key == null || data == null || request == null || !BCrypt.checkpw(request.getCode(),data.get("code"))) {
+                writer.print(objectMapper.writeValueAsString(new Response(1, "Mã xác thực không chính xác")));
+                writer.flush();
+                return;
+            }
+
+            User user = new User();
+            user.setId(data.get("username"));
+            user.setFullName(data.get("fullName"));
+            user.setEmail(data.get("email"));
+            user.setPassword(data.get("password"));
+            User registeredUser = userService.insert(user);
+            if (registeredUser == null) {
+                writer.print(objectMapper.writeValueAsString(new Response(1, "Lỗi tạo tài khoản, thử lại sau")));
+                writer.flush();
+                return;
+            }
+
+            jedis.del(key);
+
+            CookieUtils.deleteCookie("rKey",resp);
+
+            UserInfo userInfo = new UserInfo(registeredUser);
+            req.getSession().setAttribute("user", userInfo);
+            resp.addCookie(authService.generateLoginCookie(userInfo,-1));
+            writer.print(objectMapper.writeValueAsString(new Response(0, "")));
             writer.flush();
-            return;
+            new Thread(() -> EmailUtils.getInstance().sendEmail(user.getEmail(), "Đăng ký thành công",
+                    "Chúc mừng tài khoản "
+                            + user.getId() + " đã đăng ký tài khoản thành công")).start();
+            Activity activity = new Activity(Activity.USER,String.format("<strong>%s</strong> đã đăng ký tài khoản mới",userInfo.getFullName()));
+            LogService.insertLogActivity(activity);
         }
-
-        User user = new User();
-        user.setId(data.get("username"));
-        user.setEmail(data.get("email"));
-        user.setPassword(data.get("password"));
-        User registeredUser = userService.insert(user);
-        if (registeredUser == null) {
-            writer.print(objectMapper.writeValueAsString(new Response(1, "Lỗi tạo tài khoản, thử lại sau")));
-            writer.flush();
-            return;
-        }
-
-        jedis.del(key);
-
-        Cookie cookie = new Cookie("rKey","");
-        cookie.setMaxAge(0);
-        resp.addCookie(cookie);
-
-        UserInfo userInfo = new UserInfo(registeredUser);
-        req.getSession().setAttribute("user", userInfo);
-        resp.addCookie(authService.generateLoginCookie(userInfo,-1));
-        writer.print(objectMapper.writeValueAsString(new Response(0, "")));
-        writer.flush();
-        new Thread(() -> EmailUtils.getInstance().sendEmail(user.getEmail(), "Đăng ký thành công",
-                "Chúc mừng tài khoản "
-                        + user.getId() + " đã đăng ký tài khoản thành công")).start();
     }
 
     @Data
     public static class Request {
         private String username;
+        private String fullName;
         private String email;
         private String password;
     }

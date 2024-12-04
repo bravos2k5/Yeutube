@@ -10,7 +10,7 @@ window.onload = function () {
 };
 
 function updateViewCount() {
-    fetch('/api/public/updateViewCount', {
+    fetch('/api/public/update-view-count', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

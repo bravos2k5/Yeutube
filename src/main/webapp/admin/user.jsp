@@ -29,47 +29,52 @@
             </thead>
             <tbody>
             <jsp:useBean id="userList" scope="request" type="java.util.List<com.bravos.yeutube.model.User>"/>
-            <c:forEach var="userItem" items="${userList}">
-                <tr>
-                    <td>${userItem.id}</td>
-                    <td>${userItem.fullName}</td>
-                    <td>${userItem.email}</td>
-                    <td>${userItem.admin ? "Admin" : "User"}</td>
-                    <td>
-                        <div class="action-buttons">
-                            <a href="${pageContext.request.contextPath}/admin/users/update?id=${userItem.id}">
-                                <button class="btn btn-edit">
-                                    <i class="material-icons">edit</i>
-                                </button>
-                            </a>
-                            <button class="btn btn-delete">
-                                <i class="material-icons">delete</i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            </c:forEach>
+            <c:if test="${userList.size() != 0}">
+                <c:forEach var="userItem" items="${userList}">
+                    <tr>
+                        <td>${userItem.id}</td>
+                        <td>${userItem.fullName}</td>
+                        <td>${userItem.email}</td>
+                        <td>${userItem.admin ? "Admin" : "User"}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="${pageContext.request.contextPath}/admin/users/update?id=${userItem.id}">
+                                    <button class="btn btn-edit">
+                                        <i class="material-icons">edit</i>
+                                    </button>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                </c:forEach>
+            </c:if>
             </tbody>
         </table>
     </div>
 
     <jsp:useBean id="pageList" scope="request" type="java.util.List<java.lang.Long>"/>
     <c:if test="${pageList.size() > 1}">
-        <div class="pagination">
+        <form method="GET" class="pagination" action="${pageContext.request.contextPath}/admin/users">
             <c:if test="${currentPage > 1}">
-                <button class="page-btn">
+                <button name="page" value="1" class="page-btn">
+                    <i class="material-icons">first_page</i>
+                </button>
+                <button name="page" value="${currentPage - 1}" class="page-btn">
                     <i class="material-icons">chevron_left</i>
                 </button>
             </c:if>
             <c:forEach var="page" items="${pageList}">
-                <button class="page-btn ${currentPage == page ? "active" : ""}">${page}</button>
+                <button name="page" value="${page}" class="page-btn ${currentPage == page ? "active" : ""}">${page}</button>
             </c:forEach>
             <c:if test="${currentPage < maxPage}">
-                <button class="page-btn">
+                <button name="page" value="${currentPage + 1}" class="page-btn">
                     <i class="material-icons">chevron_right</i>
                 </button>
+                <button name="page" value="${maxPage}" class="page-btn">
+                    <i class="material-icons">last_page</i>
+                </button>
             </c:if>
-        </div>
+        </form>
     </c:if>
 
 </div>

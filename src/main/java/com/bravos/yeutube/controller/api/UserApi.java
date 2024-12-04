@@ -142,7 +142,7 @@ public class UserApi extends HttpServlet {
 
         String message = user == null ? "Cập nhật thất bại" : "Cập nhật thành công";
 
-        sendReponse(new Response(user == null ? 0 : 1,message),resp);
+        sendReponse(new Response(user == null ? 1 : 0,message),resp);
 
     }
 

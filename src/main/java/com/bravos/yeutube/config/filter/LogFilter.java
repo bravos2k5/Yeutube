@@ -4,13 +4,11 @@ import com.bravos.yeutube.dto.UserInfo;
 import com.bravos.yeutube.model.Log;
 import com.bravos.yeutube.service.LogService;
 import jakarta.servlet.*;
-import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
-@WebFilter("/*")
 public class LogFilter implements Filter {
 
     private final LogService logService = new LogService();

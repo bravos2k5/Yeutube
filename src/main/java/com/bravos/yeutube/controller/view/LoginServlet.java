@@ -11,7 +11,7 @@ import jakarta.servlet.http.*;
 
 import java.io.IOException;
 
-@WebServlet("/login")
+@WebServlet(urlPatterns = {"/login","/forget"})
 public class LoginServlet extends HttpServlet {
 
     private AuthService authService;
@@ -27,6 +27,7 @@ public class LoginServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Cookie tokenCookie = authService.getAccessToken(req.getCookies());
         HttpSession session = req.getSession();
+        String uri = req.getRequestURI();
         if(tokenCookie != null) {
             String token = tokenCookie.getValue();
             UserInfo userInfo = JwtUtils.extractUserInfoIfValid(token);
@@ -39,7 +40,8 @@ public class LoginServlet extends HttpServlet {
                 return;
             }
         }
-        req.getRequestDispatcher(getServletContext().getContextPath() + "/auth.jsp").forward(req,resp);
+        req.getRequestDispatcher(getServletContext().getContextPath() +
+                (uri.endsWith("login") ? "/auth.jsp" : "forget.jsp")).forward(req,resp);
     }
 
 }

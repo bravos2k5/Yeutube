@@ -2,22 +2,19 @@ package com.bravos.yeutube.service;
 
 import com.bravos.yeutube.model.User;
 import com.bravos.yeutube.repository.UserRepository;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class UserService {
 
     private final UserRepository userRepository = new UserRepository();
 
-    public User findById(String id, String... lazyLoaders) {
-        return userRepository.findById(id,lazyLoaders);
+    public User findById(String id) {
+        return userRepository.findById(id);
     }
 
-    public List<User> findAll(String... lazyLoaders) {
-        return userRepository.findAll(lazyLoaders);
+    public List<User> findAll() {
+        return userRepository.findAll();
     }
 
     public List<User> findAllByPage(int page, int pageSize) {

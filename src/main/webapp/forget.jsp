@@ -14,7 +14,7 @@
 <div id="theme-switch" class="theme-switch">
     <i class="fas fa-moon"></i>
 </div>
-<div class="notification-container" id="notificationContainer"></div>
+
 <div class="container auth-container">
     <div class="auth-card animate-card">
         <div class="text-center mb-4">
@@ -64,7 +64,7 @@
                 </div>
                 <button type="button" id="btnCheckUsername" class="btn btn-primary mb-3">Tiếp tục</button>
                 <div class="text-center">
-                    <a href="login.jsp" class="text-decoration-none" style="color: var(--primary-color)">Quay lại đăng nhập</a>
+                    <a href="${pageContext.request.contextPath}/login" class="text-decoration-none" style="color: var(--primary-color)">Quay lại đăng nhập</a>
                 </div>
             </form>
         </div>
@@ -107,201 +107,6 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
-<script type="module">
-    // Xử lý chuyển đổi giữa các bước
-    const step1 = document.getElementById('step1');
-    const step2 = document.getElementById('step2');
-    const step3 = document.getElementById('step3');
-    const userEmail = document.getElementById('userEmail');
-    const overlay = document.getElementById('overlay');
-
-    // Xử lý nút kiểm tra username
-    document.getElementById('btnCheckUsername').addEventListener('click', async () => {
-        const username = document.getElementById('recoveryUsername').value.trim();
-        if (!username) {
-            showNotification('Vui lòng nhập tên tài khoản', 'error');
-            return;
-        }
-
-        try {
-            overlay.style.display = 'flex';
-            const response = await fetch('/api/auth/check-username', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ username })
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                // Hiển thị email đã che giấu (ví dụ: j***@gmail.com)
-                userEmail.textContent = data.maskedEmail;
-                step1.style.display = 'none';
-                step2.style.display = 'block';
-            } else {
-                showNotification(data.message || 'Tài khoản không tồn tại', 'error');
-            }
-        } catch (error) {
-            showNotification('Đã có lỗi xảy ra', 'error');
-        } finally {
-            overlay.style.display = 'none';
-        }
-    });
-
-    // Xử lý input mã xác nhận
-    const verificationInputs = document.querySelectorAll('.verification-input');
-    verificationInputs.forEach((input, index) => {
-        input.addEventListener('input', (e) => {
-            if (e.target.value && index < verificationInputs.length - 1) {
-                verificationInputs[index + 1].focus();
-            }
-        });
-
-        input.addEventListener('keydown', (e) => {
-            if (e.key === 'Backspace' && !e.target.value && index > 0) {
-                verificationInputs[index - 1].focus();
-            }
-        });
-    });
-
-    // Xử lý nút xác nhận mã
-    document.getElementById('btnVerifyCode').addEventListener('click', async () => {
-        const code = Array.from(verificationInputs).map(input => input.value).join('');
-        if (code.length !== 6) {
-            showNotification('Vui lòng nhập đủ mã xác nhận', 'error');
-            return;
-        }
-
-        try {
-            overlay.style.display = 'flex';
-            // Gọi API xác thực mã
-            const response = await fetch('/api/auth/verify-code', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    username: document.getElementById('recoveryUsername').value,
-                    code
-                })
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                step2.style.display = 'none';
-                step3.style.display = 'block';
-            } else {
-                showNotification(data.message || 'Mã xác nhận không đúng', 'error');
-            }
-        } catch (error) {
-            showNotification('Đã có lỗi xảy ra', 'error');
-        } finally {
-            overlay.style.display = 'none';
-        }
-    });
-
-    // Xử lý đặt lại mật khẩu
-    document.getElementById('btnResetPassword').addEventListener('click', async () => {
-        const newPassword = document.getElementById('newPassword').value;
-        const confirmPassword = document.getElementById('confirmNewPassword').value;
-
-        if (!newPassword || !confirmPassword) {
-            showNotification('Vui lòng nhập đầy đủ thông tin', 'error');
-            return;
-        }
-
-        if (newPassword !== confirmPassword) {
-            showNotification('Mật khẩu xác nhận không khớp', 'error');
-            return;
-        }
-
-        try {
-            overlay.style.display = 'flex';
-            // Gọi API đặt lại mật khẩu
-            const response = await fetch('/api/reset-password', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    username: document.getElementById('recoveryUsername').value,
-                    newPassword
-                })
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                showNotification('Đặt lại mật khẩu thành công', 'success');
-                setTimeout(() => {
-                    window.location.href = 'login.jsp';
-                }, 1500);
-            } else {
-                showNotification(data.message || 'Không thể đặt lại mật khẩu', 'error');
-            }
-        } catch (error) {
-            showNotification('Đã có lỗi xảy ra', 'error');
-        } finally {
-            overlay.style.display = 'none';
-        }
-    });
-
-    // Xử lý gửi lại mã
-    document.getElementById('resendCode').addEventListener('click', async (e) => {
-        e.preventDefault();
-        try {
-            overlay.style.display = 'flex';
-            // Gọi API gửi lại mã
-            const response = await fetch('/api/resend-code', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    username: document.getElementById('recoveryUsername').value
-                })
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                showNotification('Đã gửi lại mã xác nhận', 'success');
-            } else {
-                showNotification(data.message || 'Không thể gửi lại mã', 'error');
-            }
-        } catch (error) {
-            showNotification('Đã có lỗi xảy ra', 'error');
-        } finally {
-            overlay.style.display = 'none';
-        }
-    });
-
-    // Hàm hiển thị thông báo
-    function showNotification(message, type) {
-        const container = document.getElementById('notificationContainer');
-        const notification = document.createElement('div');
-        notification.className = `notification ${type}`;
-        notification.textContent = message;
-        container.appendChild(notification);
-
-        setTimeout(() => {
-            notification.classList.add('fade-out');
-            setTimeout(() => {
-                notification.remove();
-            }, 300);
-        }, 3000);
-    }
-
-    // Theme switcher
-    document.getElementById('theme-switch').addEventListener('click', () => {
-        const html = document.documentElement;
-        const currentTheme = html.getAttribute('data-bs-theme');
-        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-        html.setAttribute('data-bs-theme', newTheme);
-    });
-</script>
+<script type="module" src="${pageContext.request.contextPath}/js/forget.js"></script>
 </body>
 </html>

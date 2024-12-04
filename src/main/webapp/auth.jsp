@@ -77,7 +77,7 @@
                     </div>
                     <button id="btnLogin" type="button" class="btn btn-primary mb-3">Đăng nhập</button>
                     <div class="text-center">
-                        <a href="#" class="text-decoration-none" style="color: var(--primary-color)">Quên mật khẩu?</a>
+                        <a href="${pageContext.request.contextPath}/forget" class="text-decoration-none" style="color: var(--primary-color)">Quên mật khẩu?</a>
                     </div>
                 </form>
             </div>
@@ -85,6 +85,9 @@
                 <form id="registerForm">
                     <div class="mb-3">
                         <input id="registerUsername" type="text" class="form-control" placeholder="Tên tài khoản">
+                    </div>
+                    <div class="mb-3">
+                        <input id="fullName" type="text" class="form-control" placeholder="Họ và tên">
                     </div>
                     <div class="mb-3">
                         <input id="registerEmail" type="email" class="form-control" placeholder="Email">

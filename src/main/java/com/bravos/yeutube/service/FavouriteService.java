@@ -1,5 +1,6 @@
 package com.bravos.yeutube.service;
 
+import com.bravos.yeutube.dto.LikeStatistic;
 import com.bravos.yeutube.model.Favourite;
 import com.bravos.yeutube.config.RedisConnectionPool;
 import com.bravos.yeutube.utils.RedisUtils;
@@ -17,8 +18,16 @@ public class FavouriteService {
         return favouriteRepository.findAll();
     }
 
+    public List<Favourite> findAll(int page, int pageSize) {
+        return favouriteRepository.findAll((page - 1) * pageSize,pageSize);
+    }
+
     public List<Favourite> findByUserId(String id) {
-        return favouriteRepository.findByUserId(id);
+        return favouriteRepository.findByUserId(id, 0, 0);
+    }
+
+    public List<Favourite> findByUserId(String id, int page, int pageSize) {
+        return favouriteRepository.findByUserId(id, (page - 1) * page, pageSize);
     }
 
     public long likeVideo(String username, UUID videoId) {
@@ -57,6 +66,26 @@ public class FavouriteService {
     public Long getLikeCountVideo(UUID id) {
         return RedisUtils.getKeyWithLockCache("like:" + id, Long.class,
                 300, 200, 200, () -> favouriteRepository.getLikeCount(id));
+    }
+
+    public Long getTotalRow() {
+        return favouriteRepository.countAll();
+    }
+
+    public Long getCountByUser(String id) {
+        return favouriteRepository.countByUserId(id);
+    }
+
+    public List<LikeStatistic> getLikeStatistic(int page, int pageSize) {
+        List<LikeStatistic> likeStatistics = favouriteRepository.getLikeStatistic((page - 1) * page,pageSize);
+        likeStatistics.forEach(likeStatistic -> likeStatistic.setLikeCount(getLikeCountVideo(likeStatistic.getVideoId())));
+        return likeStatistics;
+    }
+
+    public List<LikeStatistic> getLikeStatisticByTitle(String title, int page, int pageSize) {
+        List<LikeStatistic> likeStatistics = favouriteRepository.getLikeStatisticByTitle(title,(page - 1) * pageSize, pageSize);
+        likeStatistics.forEach(likeStatistic -> likeStatistic.setLikeCount(getLikeCountVideo(likeStatistic.getVideoId())));
+        return likeStatistics;
     }
 
 }

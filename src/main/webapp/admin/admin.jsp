@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trang quản trị Youtube</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/admin-${link}.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/popup.css">
     <style>
@@ -33,7 +34,7 @@
     </style>
 </head>
 <body>
-<div class="notification-container" id="notificationContainer"></div>
+
 <div class="sidebar">
     <div class="logo">Admin</div>
     <nav>
@@ -52,11 +53,19 @@
         </a>
         <a href="${pageContext.request.contextPath}/admin/favourites" class="nav-item">
             <i class="material-icons">favorite</i>
-            <span>Favourites</span>
+            <span>Yêu thích</span>
+        </a>
+        <a href="${pageContext.request.contextPath}/admin/likes" class="nav-item">
+            <i class="material-icons">thumb_up</i>
+            <span>Thống kê like</span>
         </a>
         <a href="${pageContext.request.contextPath}/admin/shares" class="nav-item">
             <i class="material-icons">share</i>
-            <span>Shares</span>
+            <span>Chia sẻ</span>
+        </a>
+        <a href="${pageContext.request.contextPath}/logout" class="nav-item">
+            <i class="material-icons">logout</i>
+            <span>Đăng xuất</span>
         </a>
     </nav>
 </div>

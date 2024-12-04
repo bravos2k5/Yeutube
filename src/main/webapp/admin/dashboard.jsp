@@ -1,5 +1,7 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <div class="main-content">
+    
     <div class="dashboard-header">
         <h1>Dashboard</h1>
         <p>Xem tổng quan về hệ thống của bạn</p>
@@ -27,33 +29,18 @@
     <div class="recent-activity">
         <h2>Hoạt động gần đây</h2>
         <ul class="activity-list">
-            <li class="activity-item">
-                <div class="activity-icon">
-                    <i class="material-icons">person_add</i>
-                </div>
-                <div class="activity-details">
-                    <strong>Nguyễn Văn A</strong> đã đăng ký tài khoản mới
-                    <div style="font-size: 12px; color: #666;">2 phút trước</div>
-                </div>
-            </li>
-            <li class="activity-item">
-                <div class="activity-icon">
-                    <i class="material-icons">video_library</i>
-                </div>
-                <div class="activity-details">
-                    <strong>Trần Thị B</strong> đã đăng video mới
-                    <div style="font-size: 12px; color: #666;">15 phút trước</div>
-                </div>
-            </li>
-            <li class="activity-item">
-                <div class="activity-icon">
-                    <i class="material-icons">favorite</i>
-                </div>
-                <div class="activity-details">
-                    <strong>Lê Văn C</strong> đã thích video "Hướng dẫn nấu ăn"
-                    <div style="font-size: 12px; color: #666;">1 giờ trước</div>
-                </div>
-            </li>
+            <jsp:useBean id="activities" scope="request" type="java.util.List<com.bravos.yeutube.dto.Activity>"/>
+            <c:forEach var="activity" items="${activities}">
+                <li class="activity-item">
+                    <div class="activity-icon">
+                        <i class="material-icons">${activity.type == 1 ? 'video_library' : 'person-add'}</i>
+                    </div>
+                    <div class="activity-details">
+                            ${activity.message}
+                        <div style="font-size: 12px; color: #666;">${activity.dateTimeString}</div>
+                    </div>
+                </li>
+            </c:forEach>
         </ul>
     </div>
 </div>

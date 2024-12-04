@@ -3,10 +3,10 @@
 <div class="main-content">
     <div class="edit-header">
         <h1>Chỉnh sửa thông tin người dùng</h1>
-        <a href="#" class="back-button">
+        <button id="btnBack" type="button" class="back-button">
             <i class="material-icons">arrow_back</i>
             Trở về
-        </a>
+        </button>
     </div>
 
     <div class="edit-form">
@@ -47,7 +47,6 @@
 
             <div class="form-actions">
                 <button id="btnSave" type="button" class="btn btn-primary">Lưu thay đổi</button>
-                <button type="button" class="btn btn-secondary">Hủy</button>
             </div>
         </form>
     </div>

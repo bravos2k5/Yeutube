@@ -1,5 +1,7 @@
 package com.bravos.yeutube.controller;
 
+import com.bravos.yeutube.utils.CookieUtils;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
@@ -9,14 +11,12 @@ import java.io.IOException;
 public class LogoutServlet extends HttpServlet {
 
     @Override
-    protected void service(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         HttpSession session = req.getSession();
         if (session.getAttribute("user") != null) {
             session.invalidate();
-            Cookie cookie = new Cookie("accessToken","");
-            cookie.setMaxAge(0);
-            cookie.setPath("/");
-            resp.addCookie(cookie);
+            CookieUtils.deleteCookie("accessToken",resp);
+            CookieUtils.deleteCookie("recentViews",resp);
         }
         resp.sendRedirect(getServletContext().getContextPath() + "/home");
     }

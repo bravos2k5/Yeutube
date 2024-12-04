@@ -1,20 +1,22 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<jsp:useBean id="video" scope="request" type="com.bravos.yeutube.model.Video"/>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <div class="main-content">
     <div class="edit-header">
         <h1>Chỉnh sửa Video</h1>
-        <a href="#" class="back-button">
+        <button id="btnBack" type="button" class="back-button">
             <i class="material-icons">arrow_back</i>
             Trở về
-        </a>
+        </button>
     </div>
 
     <div class="edit-form">
-        <form>
+        <form id="edit-form" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="youtube-url">Link Youtube</label>
                 <div class="url-input-group">
                     <input type="text" id="youtube-url" class="form-control"
-                           placeholder="Nhập link Youtube video">
+                           placeholder="Nhập link Youtube video" value="https://www.youtube.com/watch?v=${video.youtubeId}">
                     <button id="verifyBtn" type="button" class="btn btn-verify">
                         <i class="material-icons">check</i>
                     </button>
@@ -23,7 +25,7 @@
 
             <div class="form-group">
                 <label>ID Video</label>
-                <input type="text" class="form-control readonly-field" value="${video.id}" readonly>
+                <input name="videoId" id="videoId" type="text" class="form-control readonly-field" value="${video.id}" readonly>
             </div>
 
             <div class="form-group">
@@ -42,7 +44,7 @@
                 <div class="thumbnail-preview">
                     <img id="thumbnailImg" src="${video.poster}" alt="Thumbnail">
                 </div>
-                <input type="file" accept="image/*" id="thumbnail" hidden>
+                <input name="thumbnail" type="file" accept="image/*" id="thumbnail" hidden>
                 <label style="color: white" for="thumbnail" class="btn btn-secondary">Thay đổi thumbnail (nên chọn ảnh chất lượng cao rõ nét, không bị vỡ</label>
             </div>
 
@@ -50,13 +52,19 @@
                 <div class="form-group">
                     <label>Ngày tạo</label>
                     <input type="text" class="form-control readonly-field"
-                           value="${video.createdTime}" readonly>
+                           value="${video.createdTime.toLocalDate()}" readonly>
                 </div>
 
                 <div class="form-group">
                     <label>Lượt xem</label>
                     <input type="text" class="form-control readonly-field"
                            value="${video.views}" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label>Lượt like</label>
+                    <input type="text" class="form-control readonly-field"
+                           value="${like}" readonly>
                 </div>
 
                 <div class="form-group">

@@ -1,6 +1,6 @@
 package com.bravos.yeutube.controller.api;
 
-import com.bravos.yeutube.utils.PropsUtils;
+import com.bravos.yeutube.service.VideoService;
 import com.bravos.ytbcraw.VideoInfo;
 import com.bravos.ytbcraw.YtbService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,7 +23,7 @@ public class GetYoutubeInfoApi extends HttpServlet {
 
     @Override
     public void init() {
-        ytbService = new YtbService(PropsUtils.getInstance().getResourceProperties().getProperty("api.key.youtube"));
+        ytbService = new VideoService().getYtbService();
         objectMapper = new ObjectMapper();
     }
 

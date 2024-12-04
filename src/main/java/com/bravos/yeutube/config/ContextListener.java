@@ -5,14 +5,13 @@ import com.bravos.yeutube.config.filter.AutoLoginFilter;
 import com.bravos.yeutube.config.filter.LogFilter;
 import com.bravos.yeutube.config.filter.SecurityFilter;
 import com.bravos.yeutube.service.VideoService;
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletContextEvent;
-import jakarta.servlet.ServletContextListener;
+import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebListener;
 
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.EnumSet;
 import java.util.Enumeration;
 
 @WebListener
@@ -25,10 +24,19 @@ public class ContextListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent sce) {
 
         ServletContext context = sce.getServletContext();
-        context.addFilter("autoLoginFilter", new AutoLoginFilter());
-        context.addFilter("appFilter", new AppFilter());
-        context.addFilter("securityFilter", new SecurityFilter());
-        context.addFilter("logFilter", new LogFilter());
+
+        FilterRegistration.Dynamic filter1 = context.addFilter("Filter1", AutoLoginFilter.class);
+        filter1.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
+
+        FilterRegistration.Dynamic filter2 = context.addFilter("Filter2", AppFilter.class);
+        filter2.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
+
+        FilterRegistration.Dynamic filter3 = context.addFilter("Filter3", SecurityFilter.class);
+        filter3.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
+
+//        FilterRegistration.Dynamic filter4 = context.addFilter("Filter4", LogFilter.class);
+//        filter4.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
+
         videoService.getVideoCount();
         context.setAttribute("visitors",0L);
 

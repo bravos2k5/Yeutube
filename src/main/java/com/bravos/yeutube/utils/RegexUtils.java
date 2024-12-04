@@ -40,4 +40,16 @@ public class RegexUtils {
         return username != null && !username.isBlank() && username.matches("^[a-zA-Z0-9]{5,}$\n");
     }
 
+    public static String maskEmail(String email) {
+        String[] emailParts = email.split("@");
+        StringBuilder maskEmail = new StringBuilder();
+        int hiddenUsername = (int)Math.ceil((double) emailParts[0].length() / 2);
+        int hiddenDomainName = (int) Math.floor((double) emailParts[1].length() / 2);
+        maskEmail.append(emailParts[0], 0, hiddenUsername);
+        maskEmail.append("*".repeat(emailParts[0].length() - hiddenUsername));
+        maskEmail.append("@").append("*".repeat(hiddenDomainName));
+        maskEmail.append(emailParts[1], hiddenDomainName, emailParts[1].length());
+        return maskEmail.toString().trim();
+    }
+
 }

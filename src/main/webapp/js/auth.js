@@ -85,14 +85,20 @@ function registerHandle() {
 
     let registerRequest = {
         username: document.getElementById('registerUsername').value,
+        fullName: document.getElementById('fullName').value,
         password: document.getElementById('registerPassword').value,
         email: document.getElementById('registerEmail').value
     }
 
     let repassword = document.getElementById('registerRePassword').value;
 
-    if (registerRequest.username.trim().length === 0 || registerRequest.password.length === 0 || repassword.length === 0) {
-        showAlert('warning', 'Cảnh báo', 'Thông tin đăng nhập không được bỏ trống!');
+    if (registerRequest.username.trim().length === 0 ||
+        registerRequest.password.length === 0 ||
+        repassword.length === 0 ||
+        registerRequest.fullName.trim().length === 0
+    )
+    {
+        showAlert('warning', 'Cảnh báo', 'Thông tin đăng ký không được bỏ trống!');
         return;
     }
 
@@ -154,8 +160,6 @@ function sendCode() {
         if (data.status !== 0) {
             showAlert('error', 'Lỗi', `${data.message}`);
         } else {
-            showAlert('success', 'Thành công', 'Đăng ký thành công');
-            document.getElementById('btnSendCode').hidden = true;
             window.location.href = "/home";
         }
     });

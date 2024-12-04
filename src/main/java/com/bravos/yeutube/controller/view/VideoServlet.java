@@ -39,14 +39,14 @@ public class VideoServlet extends HttpServlet {
             return;
         }
         Video video = videoService.findById(videoId);
-        if(video == null) {
+        if(video == null || !video.getActive()) {
             resp.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
         video.setViews(video.getViews() + videoService.getIncreaseViewCount(videoId));
 
         List<Video> recentViewsList = new ArrayList<>();
-        List<UUID> recentViews = (List<UUID>) req.getSession().getAttribute("recentViews");
+        List<UUID> recentViews = videoService.getRecentViewsList(req.getCookies());
         for(UUID vId : recentViews) {
             if(vId.equals(videoId)) {
                 continue;

@@ -17,7 +17,6 @@ public class SessionListener implements HttpSessionListener {
     @Override
     public void sessionCreated(HttpSessionEvent se) {
         HttpSession session = se.getSession();
-        session.setAttribute("recentViews", new ArrayList<UUID>());
         increase(session);
     }
 

@@ -2,12 +2,21 @@ package com.bravos.yeutube.service;
 
 import com.bravos.yeutube.model.Video;
 import com.bravos.yeutube.config.RedisConnectionPool;
+import com.bravos.yeutube.utils.CookieUtils;
+import com.bravos.yeutube.utils.PropsUtils;
 import com.bravos.yeutube.utils.RedisUtils;
-import com.bravos.yeutube.repository.FavouriteRepository;
 import com.bravos.yeutube.repository.VideoRepository;
+import com.bravos.ytbcraw.YtbService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.Cookie;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.params.SetParams;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,12 +31,20 @@ public class VideoService {
         return videoRepository.findById(id);
     }
 
-    public List<Video> findAll(String... lazyLoader) {
-        return videoRepository.findAll(lazyLoader);
+    public List<Video> findAll() {
+        return videoRepository.findAll();
+    }
+
+    public List<Video> findAll(int page, int pageSize) {
+        return videoRepository.findAll((page - 1) * pageSize, pageSize);
     }
 
     public Video insert(Video video) {
         return videoRepository.insert(video);
+    }
+
+    public Video update(Video video) {
+        return videoRepository.update(video);
     }
 
     public List<Video> findByTitle(String title) {
@@ -121,5 +138,18 @@ public class VideoService {
     public Long getMaxPage(Long videoCount, int pageSize) {
         return (long) Math.ceil((double) videoCount / pageSize);
     }
+
+    public List<UUID> getRecentViewsList(Cookie[] cookies) throws JsonProcessingException {
+        Cookie cookie = CookieUtils.getCookie("recentViews", cookies);
+        if (cookie != null) {
+            return new ObjectMapper().readValue(URLDecoder.decode(cookie.getValue(), StandardCharsets.UTF_8), new TypeReference<>() {});
+        }
+        return new ArrayList<>();
+    }
+
+    public YtbService getYtbService() {
+        return new YtbService(PropsUtils.getInstance().getResourceProperties().getProperty("api.key.youtube"));
+    }
+
 
 }

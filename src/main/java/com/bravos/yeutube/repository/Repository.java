@@ -14,22 +14,22 @@ public abstract class Repository<T,ID> {
         this.clazz = clazz;
     }
 
-    public final T findById(ID id, String... lazyLoaders) {
+    public final T findById(ID id) {
         String hql = "FROM " + clazz.getName() + " e WHERE e.id = :id";
         Map<String,Object> params = new HashMap<>();
         params.put("id",id);
-        List<T> listQuery = executeQuery(hql,params,lazyLoaders);
+        List<T> listQuery = executeQuery(hql,params);
         return listQuery.isEmpty() ? null : listQuery.getFirst();
     }
 
-    public final List<T> findAll(String...lazyLoaders) {
+    public final List<T> findAll() {
         String hql = "FROM " + clazz.getName() + " e";
-        return executeQuery(hql,null,lazyLoaders);
+        return executeQuery(hql,null);
     }
 
-    public final List<T> findAll(int offset, int limit, String...lazyLoaders) {
+    public final List<T> findAll(int offset, int limit) {
         String hql = "FROM " + clazz.getName() + " e";
-        return executeQuery(hql,null,offset,limit,lazyLoaders);
+        return executeQuery(hql,null,offset,limit);
     }
 
     public final T insert(T object) {
@@ -93,7 +93,8 @@ public abstract class Repository<T,ID> {
             if (transaction != null) {
                 transaction.rollback();
             }
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            return null;
         }
     }
 
@@ -166,12 +167,12 @@ public abstract class Repository<T,ID> {
         }
     }
 
-    protected final List<T> findByHql(String hql, Map<String, Object> args, String... lazyLoaders) {
-        return executeQuery(hql,args,lazyLoaders);
+    protected final List<T> findByHql(String hql, Map<String, Object> args) {
+        return executeQuery(hql,args);
     }
 
-    protected final List<T> findByHql(String hql, Map<String, Object> args, int offset, int limit, String... lazyLoaders) {
-        return executeQuery(hql,args,offset,limit,lazyLoaders);
+    protected final List<T> findByHql(String hql, Map<String, Object> args, int offset, int limit) {
+        return executeQuery(hql,args,offset,limit);
     }
 
     protected <X> List<X> executeHqlSingleData(String hql, Class<X> clazz) {
@@ -179,6 +180,14 @@ public abstract class Repository<T,ID> {
     }
 
     protected <X> List<X> executeHqlSingleData(String hql, Map<String,Object> params, Class<X> clazz) {
+        return executeHqlSingleData(hql,params,0,0,clazz);
+    }
+
+    protected <X> List<X> executeHqlSingleData(String hql, int offset, int limit, Class<X> clazz) {
+        return executeHqlSingleData(hql,null,offset,limit,clazz);
+    }
+
+    protected <X> List<X> executeHqlSingleData(String hql, Map<String,Object> params, int offset, int limit, Class<X> clazz) {
         try(EntityManager entityManager = HibernateConfig.entityManager()) {
             TypedQuery<X> query = entityManager.createQuery(hql,clazz);
             if (params != null) {
@@ -187,6 +196,12 @@ public abstract class Repository<T,ID> {
                         query.setParameter(key,value);
                     }
                 });
+            }
+            if (offset > 0) {
+                query.setFirstResult(offset);
+            }
+            if (limit > 0) {
+                query.setMaxResults(limit);
             }
             return query.getResultList();
         } catch (Exception e) {
@@ -213,35 +228,15 @@ public abstract class Repository<T,ID> {
     }
 
 
-    private List<T> executeQuery(String hql, Map<String,Object> params , String... lazyLoaders) {
-        return executeQuery(hql,params,0,0,lazyLoaders);
+    private List<T> executeQuery(String hql, Map<String,Object> params) {
+        return executeQuery(hql,params,0,0);
     }
 
-    // Nếu dùng lazyLoaders alias phải là e
-    private List<T> executeQuery(String hql, Map<String, Object> params, int offset, int limit, String... lazyLoaders) {
+    private List<T> executeQuery(String hql, Map<String, Object> params, int offset, int limit) {
         try (EntityManager entityManager = HibernateConfig.entityManager()) {
 
             StringBuilder queryBuilder;
-
-            if (lazyLoaders != null && lazyLoaders.length > 0) {
-
-                String[] mainParts = hql.split("(?i)\\b(order by|group by|having|where)\\b");
-                queryBuilder = new StringBuilder(mainParts[0].trim());
-                Set<String> uniqueLoaders = new HashSet<>(Arrays.asList(lazyLoaders));
-                for (String lazyLoader : uniqueLoaders) {
-                    if (lazyLoader != null) {
-                        queryBuilder.append(" LEFT JOIN FETCH e.").append(lazyLoader);
-                    }
-                }
-                for (int i = 1; i < mainParts.length; i++) {
-                    queryBuilder.append(" ").append(hql, hql.indexOf(mainParts[i - 1]) + mainParts[i - 1].length(),
-                            hql.indexOf(mainParts[i])).append(" ").append(mainParts[i].trim());
-                }
-
-            }
-            else {
-                queryBuilder = new StringBuilder(hql);
-            }
+            queryBuilder = new StringBuilder(hql);
 
             TypedQuery<T> query = entityManager.createQuery(queryBuilder.toString(), clazz);
 

@@ -3,10 +3,12 @@
 <div class="main-content">
     <div class="content-header">
         <h1>Quản lý Video</h1>
-        <button class="btn btn-primary">
-            <i class="material-icons">add</i>
-            Đăng video mới
-        </button>
+        <a style="text-decoration: none; color: inherit" href="${pageContext.request.contextPath}/admin/videos/create">
+            <button class="btn btn-primary">
+                <i class="material-icons">add</i>
+                Đăng video mới
+            </button>
+        </a>
     </div>
 
     <form class="search-box" style="display: flex; width: 100%" action="${pageContext.request.contextPath}/admin/videos">
@@ -31,12 +33,11 @@
                     </div>
                     <span class="status-badge status-${video.active ? "public" : "private"}">${video.active ? "Công khai" : "Không công khai"}</span>
                     <div class="video-actions">
-                        <button class="action-btn" title="Chỉnh sửa">
-                            <i class="material-icons">edit</i>
-                        </button>
-                        <button class="action-btn" title="Xóa">
-                            <i class="material-icons">delete</i>
-                        </button>
+                        <a style="text-decoration: none;color: inherit" href="${pageContext.request.contextPath}/admin/videos/update?id=${video.id}">
+                            <button class="action-btn" title="Chỉnh sửa">
+                                <i class="material-icons">edit</i>
+                            </button>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -44,18 +45,29 @@
 
     </div>
 
-    <div class="pagination">
-        <button class="page-btn">
-            <i class="material-icons">chevron_left</i>
-        </button>
-        <button class="page-btn active">1</button>
-        <button class="page-btn">2</button>
-        <button class="page-btn">3</button>
-        <button class="page-btn">
-            <i class="material-icons">chevron_right</i>
-        </button>
-    </div>
-
-
+    <jsp:useBean id="pageList" scope="request" type="java.util.List<java.lang.Long>"/>
+    <c:if test="${pageList.size() > 1}">
+        <form method="GET" class="pagination" action="${pageContext.request.contextPath}/admin/videos">
+            <c:if test="${currentPage > 1}">
+                <button name="page" value="1" class="page-btn">
+                    <i class="material-icons">first_page</i>
+                </button>
+                <button name="page" value="${currentPage - 1}" class="page-btn">
+                    <i class="material-icons">chevron_left</i>
+                </button>
+            </c:if>
+            <c:forEach var="page" items="${pageList}">
+                <button name="page" value="${page}" class="page-btn ${currentPage == page ? "active" : ""}">${page}</button>
+            </c:forEach>
+            <c:if test="${currentPage < maxPage}">
+                <button name="page" value="${currentPage + 1}" class="page-btn">
+                    <i class="material-icons">chevron_right</i>
+                </button>
+                <button name="page" value="${maxPage}" class="page-btn">
+                    <i class="material-icons">last_page</i>
+                </button>
+            </c:if>
+        </form>
+    </c:if>
 
 </div>

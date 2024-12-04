@@ -6,12 +6,12 @@ function save() {
         fullName: document.getElementById('fullname').value,
         email: document.getElementById('email').value,
         admin: document.getElementById('role').value === 'admin',
-        password: document.getElementById('password').value
+        newPassword: document.getElementById('password').value
     }
 
-    if (request.password != null && request.password.length !== 0) {
+    if (request.newPassword != null && request.newPassword.length !== 0) {
         let rePassword = document.getElementById('confirm-password').value;
-        if(request.password !== rePassword) {
+        if(request.newPassword !== rePassword) {
             showAlert('warning','Mật khẩu', 'Mật khẩu không trùng khớp');
             return;
         }
@@ -37,3 +37,9 @@ function save() {
 }
 
 addEventButton('btnSave',save);
+
+function returnBack() {
+    window.location.href = document.referrer;
+}
+
+addEventButton('btnBack',returnBack);

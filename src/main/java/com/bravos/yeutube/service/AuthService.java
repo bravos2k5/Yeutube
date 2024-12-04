@@ -13,6 +13,7 @@ import redis.clients.jedis.Jedis;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.UUID;
 
 public class AuthService {
 
@@ -33,14 +34,31 @@ public class AuthService {
         return userRepository.isExistUsername(username);
     }
 
+
     public int generateRegisterOtp(String key, RegisterApi.Request request, int expSecond) {
         try(Jedis jedis = RedisConnectionPool.getInstance().getResource()) {
             int code = random.nextInt(100000,999999);
             Map<String, String> data = new HashMap<>();
             data.put("username",request.getUsername());
+            data.put("fullName",request.getFullName());
             data.put("password",BCrypt.hashpw(request.getPassword(),BCrypt.gensalt()));
             data.put("email",request.getEmail());
             data.put("code", BCrypt.hashpw(String.valueOf(code),BCrypt.gensalt()));
+            jedis.hset(key,data);
+            jedis.expire(key,expSecond);
+            return code;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public int generateForgetPasswordOtp(String key, String username, int expSecond) {
+        try(Jedis jedis = RedisConnectionPool.getInstance().getResource()) {
+            int code = random.nextInt(100000,999999);
+            Map<String, String> data = new HashMap<>();
+            data.put("username",username);
+            data.put("code",BCrypt.hashpw(String.valueOf(code),BCrypt.gensalt()));
+            data.put("cCode", UUID.randomUUID().toString());
             jedis.hset(key,data);
             jedis.expire(key,expSecond);
             return code;
